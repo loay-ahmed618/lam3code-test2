@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lam3Code | منصة تعليم البرمجة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        /* ==========================
+           1. Global Styles & Dark Theme
+           ========================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #61dca3;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --dark-bg: #000;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #ecf0f1;
+            --modal-bg: rgba(0, 0, 0, 0.95);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Glitch Background */
+        #glitch-background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        #glitch-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .outer-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 100%);
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* ==========================
+           PillNav Styles
+           ========================== */
+        .pill-nav-container {
+            position: absolute;
+            top: 1em;
+            z-index: 99;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .pill-nav-container {
+                width: 100%;
+                left: 0;
+            }
+        }
+
+        .pill-nav {
+            --nav-h: 42px;
+            --logo: 36px;
+            --pill-pad-x: 18px;
+            --pill-gap: 3px;
+            width: max-content;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .pill-nav {
+                width: 100%;
+                justify-content: space-between;
+                padding: 0 1rem;
+                background: transparent;
+            }
+        }
+
+        .pill-nav-items {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: var(--nav-h);
+            background: var(--base, #000);
+            border-radius: 9999px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .pill-logo {
+            width: var(--nav-h);
+            height: var(--nav-h);
+            border-radius: 50%;
+            background: var(--base, #000);
+            padding: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-left: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .pill-logo span {
+            color: var(--pill-bg, #fff);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .pill-list {
+            list-style: none;
+            display: flex;
+            align-items: stretch;
+            gap: var(--pill-gap);
+            margin: 0;
+            padding: 3px;
+            height: 100%;
+        }
+
+        .pill-list>li {
+            display: flex;
+            height: 100%;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 0 var(--pill-pad-x);
+            background: var(--pill-bg, #fff);
+            color: var(--pill-text, var(--base, #000));
+            text-decoration: none;
+            border-radius: 9999px;
+            box-sizing: border-box;
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pill .hover-circle {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            border-radius: 50%;
+            background: var(--base, #000);
+            z-index: 1;
+            display: block;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .pill .label-stack {
+            position: relative;
+            display: inline-block;
+            line-height: 1;
+            z-index: 2;
+        }
+
+        .pill .pill-label {
+            position: relative;
+            z-index: 2;
+            display: inline-block;
+            line-height: 1;
+            will-change: transform;
+        }
+
+        .pill .pill-label-hover {
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--hover-text, #fff);
+            z-index: 3;
+            display: inline-block;
+            will-change: transform, opacity;
+        }
+
+        .pill.is-active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--base, #000);
+            border-radius: 50px;
+            z-index: 4;
+        }
+
+        .desktop-only {
+            display: block;
+        }
+
+        .mobile-only {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none;
+            }
+
+            .mobile-only {
+                display: block;
+            }
+        }
+
+        .mobile-menu-button {
+            width: var(--nav-h);
+            height: var(--nav-h);
+            border-radius: 50%;
+            background: var(--base, #000);
+            border: none;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: flex;
+            }
+        }
+
+        .hamburger-line {
+            width: 16px;
+            height: 2px;
+            background: var(--pill-bg, #fff);
+            border-radius: 1px;
+            transition: all 0.01s ease;
+            transform-origin: center;
+        }
+
+        .mobile-menu-popover {
+            position: absolute;
+            top: 3em;
+            left: 1rem;
+            right: 1rem;
+            background: var(--base, #f0f0f0);
+            border-radius: 27px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            z-index: 998;
+            opacity: 0;
+            transform-origin: top center;
+            visibility: hidden;
+        }
+
+        .mobile-menu-list {
+            list-style: none;
+            margin: 0;
+            padding: 3px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .mobile-menu-popover .mobile-menu-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--pill-text, #fff);
+            background-color: var(--pill-bg, #fff);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-menu-popover .mobile-menu-link:hover {
+            cursor: pointer;
+            background-color: var(--base);
+            color: var(--hover-text, #fff);
+        }
+
+        /* ==========================
+           LogoLoop Animation for Courses
+           ========================== */
+        .courseloop {
+            position: relative;
+            overflow-x: hidden;
+            --courseloop-gap: 30px;
+            --courseloop-cardWidth: 300px;
+            --courseloop-fadeColor: #000000;
+        }
+
+        .courseloop--fade::before,
+        .courseloop--fade::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: clamp(24px, 8%, 120px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .courseloop--fade::before {
+            left: 0;
+            background: linear-gradient(to right,
+                    var(--courseloop-fadeColor) 0%,
+                    rgba(0, 0, 0, 0) 100%);
+        }
+
+        .courseloop--fade::after {
+            right: 0;
+            background: linear-gradient(to left,
+                    var(--courseloop-fadeColor) 0%,
+                    rgba(0, 0, 0, 0) 100%);
+        }
+
+        .courseloop__track {
+            display: flex;
+            width: max-content;
+            will-change: transform;
+            user-select: none;
+        }
+
+        .courseloop__list {
+            display: flex;
+            align-items: center;
+        }
+
+        .courseloop__item {
+            flex: 0 0 auto;
+            margin-right: var(--courseloop-gap);
+            width: var(--courseloop-cardWidth);
+        }
+
+        .courseloop__item:last-child {
+            margin-right: var(--courseloop-gap);
+        }
+
+        .courseloop--scale-hover .courseloop__item {
+            overflow: visible;
+        }
+
+        .courseloop--scale-hover .courseloop__item:hover .card {
+            transform: scale(1.05);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .courseloop__track {
+                transform: translate3d(0, 0, 0) !important;
+            }
+
+            .courseloop__item .card {
+                transition: none !important;
+            }
+        }
+
+        /* ==========================
+           Content Sections
+           ========================== */
+        .hero,
+        .courses,
+        .video-section,
+        .features,
+        footer {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 60px 0;
+            margin-bottom: 20px;
+            border-top: 1px solid rgba(52, 152, 219, 0.1);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 15px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.8), rgba(44, 62, 80, 0.8));
+            padding: 100px 0 80px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            padding: 0 15px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background-color: var(--secondary-color);
+            color: #000;
+            border: none;
+            padding: 15px 35px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background-color: #4ecf91;
+            transform: translateY(-3px);
+        }
+
+        /* ==========================
+           Courses & Cards
+           ========================== */
+        .courses {
+            overflow: hidden;
+            padding: 50px 0;
+        }
+
+        .courses-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            min-width: 300px;
+            flex-shrink: 0;
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            text-align: center;
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .card-img {
+            font-size: 40px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-content h3 {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .card-content p {
+            color: #bdc3c7;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .card-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .card-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .card-button.secondary {
+            background-color: var(--primary-color);
+        }
+
+        .card-button.secondary:hover {
+            background-color: #2980b9;
+        }
+
+        .feature-icon {
+            color: var(--secondary-color);
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* ==========================
+           Modal Styles
+           ========================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            color: var(--primary-color);
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .modal-text {
+            color: #bdc3c7;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .payment-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .payment-number {
+            font-size: 24px;
+            color: var(--secondary-color);
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .payment-amount {
+            font-size: 20px;
+            color: var(--warning-color);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .modal-button {
+            background-color: var(--secondary-color);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .modal-button:hover {
+            background-color: #4ecf91;
+            transform: translateY(-2px);
+        }
+
+        .modal-button.secondary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .modal-button.secondary:hover {
+            background-color: #2980b9;
+        }
+
+        /* ==========================
+           Video Section
+           ========================== */
+        .video-section {
+            padding: 50px 0;
+        }
+
+        .video-container {
+            position: relative;
+            width: 90%;
+            max-width: 960px;
+            margin: 30px auto;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            background-color: #2c3e50;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .video-placeholder .fa-play-circle {
+            font-size: 80px;
+            color: #3498db;
+            transition: color 0.3s;
+        }
+
+        .video-section p {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #bdc3c7;
+        }
+
+        /* ==========================
+           Features Section
+           ========================== */
+        .features {
+            padding: 50px 0;
+        }
+
+        .features-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            min-width: 300px;
+            flex: 1;
+            padding: 25px 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #bdc3c7;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* ==========================
+           Footer
+           ========================== */
+        footer {
+            padding: 50px 0 20px;
+            background-color: rgba(0, 0, 0, 0.9);
+            margin-bottom: 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+        }
+
+        .footer-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .footer-section p {
+            color: #bdc3c7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #ecf0f1;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 20px;
+            color: #61dca3;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        /* ==========================
+           Responsive Styles
+           ========================== */
+
+        @media (max-width: 1024px) {
+            .pill-nav {
+                width: 100%;
+                justify-content: space-between;
+                padding: 0 1rem;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .hero,
+            .courses,
+            .video-section,
+            .features,
+            footer {
+                padding: 40px 0;
+            }
+
+            .hero {
+                padding: 80px 0 60px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .card {
+                min-width: 250px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-section {
+                margin: 15px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .cta-button {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+
+            .card {
+                min-width: 220px;
+            }
+
+            .video-placeholder .fa-play-circle {
+                font-size: 60px;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body id="body-content" lang="ar" dir="rtl">
+
+    <div id="glitch-background-container">
+        <canvas id="glitch-canvas"></canvas>
+        <div class="outer-vignette"></div>
+    </div>
+
+    <!-- PillNav Navigation -->
+    <div class="pill-nav-container">
+        <nav class="pill-nav" aria-label="Primary"
+            style="--base: #000000; --pill-bg: #61dca3; --hover-text: #ffffff; --pill-text: #000000;">
+            <a class="pill-logo" href="#" aria-label="Home" id="pill-logo">
+                <span>LC</span>
+            </a>
+
+            <div class="pill-nav-items desktop-only" id="pill-nav-items">
+                <ul class="pill-list" role="menubar">
+                    <li role="none">
+                        <a role="menuitem" href="#" class="pill is-active" aria-label="الرئيسية">
+                            <span class="hover-circle" aria-hidden="true"></span>
+                            <span class="label-stack">
+                                <span class="pill-label">الرئيسية</span>
+                                <span class="pill-label-hover" aria-hidden="true">الرئيسية</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a role="menuitem" href="#" class="pill" aria-label="الكورسات">
+                            <span class="hover-circle" aria-hidden="true"></span>
+                            <span class="label-stack">
+                                <span class="pill-label">الكورسات</span>
+                                <span class="pill-label-hover" aria-hidden="true">الكورسات</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a role="menuitem" href="#" class="pill" aria-label="المدونة">
+                            <span class="hover-circle" aria-hidden="true"></span>
+                            <span class="label-stack">
+                                <span class="pill-label">المدونة</span>
+                                <span class="pill-label-hover" aria-hidden="true">المدونة</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a role="menuitem" href="#" class="pill" aria-label="اتصل بنا">
+                            <span class="hover-circle" aria-hidden="true"></span>
+                            <span class="label-stack">
+                                <span class="pill-label">اتصل بنا</span>
+                                <span class="pill-label-hover" aria-hidden="true">اتصل بنا</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="auth-buttons desktop-only">
+                <button class="content-ar active-content" onclick="openLoginModal()">تسجيل الدخول</button>
+                <button class="content-ar active-content" onclick="openSignupModal()">إنشاء حساب</button>
+                <button id="language-switcher">English</button>
+            </div>
+
+            <button class="mobile-menu-button mobile-only" id="mobile-menu-button" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </nav>
+
+        <div class="mobile-menu-popover mobile-only" id="mobile-menu-popover"
+            style="--base: #000000; --pill-bg: #61dca3; --pill-text: #000000;">
+            <ul class="mobile-menu-list">
+                <li>
+                    <a href="#" class="mobile-menu-link is-active">الرئيسية</a>
+                </li>
+                <li>
+                    <a href="#" class="mobile-menu-link">الكورسات</a>
+                </li>
+                <li>
+                    <a href="#" class="mobile-menu-link">المدونة</a>
+                </li>
+                <li>
+                    <a href="#" class="mobile-menu-link">اتصل بنا</a>
+                </li>
+                <li>
+                    <a href="#" class="mobile-menu-link" onclick="openLoginModal()">تسجيل الدخول</a>
+                </li>
+                <li>
+                    <a href="#" class="mobile-menu-link" onclick="openSignupModal()">إنشاء حساب</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- باقي المحتوى -->
+    <div id="arabic-content" class="active-content content-ar">
+        <section class="hero">
+            <div class="container">
+                <h1>ابدأ رحلتك في عالم البرمجة</h1>
+                <p>تعلم البرمجة من الصفر إلى الاحتراف مع أفضل المدربين ومن خلال مسارات تعليمية شاملة تناسب جميع
+                    المستويات</p>
+                <button class="cta-button" onclick="alert('ابدأ التعلم')">ابدأ التعلم الآن</button>
+            </div>
+        </section>
+
+        <section class="courses">
+            <div class="container">
+                <h2 class="section-title">الكورسات المتاحة</h2>
+                <div class="courses-container">
+                    <!-- LogoLoop Animation for Courses -->
+                    <div class="courseloop courseloop--fade courseloop--scale-hover" id="coursesLoop"
+                        style="--courseloop-cardWidth: 300px; --courseloop-gap: 30px; --courseloop-fadeColor: #000000;">
+                        <div class="courseloop__track" id="coursesTrack">
+                            <!-- سيتم إضافة الكروت ديناميكياً -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="video-section">
+            <div class="container">
+                <h2 class="section-title">كيفية التسجيل في المنصة</h2>
+                <div class="video-container">
+                    <div class="video-placeholder" onclick="alert('سيتم تشغيل الفيديو التوضيحي')">
+                        <i class="fas fa-play-circle play-button"></i>
+                    </div>
+                </div>
+                <p>شاهد هذا الفيديو لتعرف كيفية التسجيل في المنصة والبدء في رحلتك التعليمية</p>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">لماذا تختار منصتنا؟</h2>
+                <div class="features-container">
+                    <div class="feature-card">
+                        <i class="fas fa-graduation-cap feature-icon"></i>
+                        <h3>مدربون محترفون</h3>
+                        <p>تعلم من أفضل المدربين ذوي الخبرة الواسعة في مجال البرمجة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-laptop-code feature-icon"></i>
+                        <h3>مشاريع عملية</h3>
+                        <p>طبق ما تتعلمه من خلال مشاريع عملية حقيقية تبني بها ملفك الشخصي.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-headset feature-icon"></i>
+                        <h3>دعم فني متواصل</h3>
+                        <p>فريق الدعم الفني متاح على مدار الساعة لمساعدتك.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div id="footer-ar" class="footer-content content-ar active-content">
+                <div class="footer-section">
+                    <h3>اتصل بنا</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> العنوان: القاهرة، مصر</p>
+                    <p><i class="fas fa-envelope"></i> البريد الإلكتروني: info@lam3code.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <a href="#">الرئيسية</a>
+                    <a href="#">الكورسات</a>
+                    <a href="#">المدونة</a>
+                </div>
+                <div class="footer-section">
+                    <h3>الدعم الفني</h3>
+                    <p>نحن هنا لمساعدتك على مدار الساعة</p>
+                </div>
+                <div class="footer-section">
+                    <h3>تابعنا على</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="content-ar active-content">جميع الحقوق محفوظة &copy; 2023 Lam3Code</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- النوافذ المنبثقة -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePaymentModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">الدفع عبر فودافون كاش</h2>
+            <div class="payment-info">
+                <p>رقم فودافون كاش:</p>
+                <div class="payment-number">01091877231</div>
+                <p>المبلغ المطلوب:</p>
+                <div class="payment-amount" id="courseAmount">500 جنيه</div>
+            </div>
+            <button class="modal-button" onclick="closePaymentModal()">تم الدفع</button>
+            <button class="modal-button secondary" onclick="closePaymentModal()">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal" id="codeModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCodeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">أدخل كود الكورس</h2>
+            <input type="text" class="form-input" id="courseCode" placeholder="أدخل الكود هنا">
+            <button class="modal-button" onclick="validateCode()">تفعيل الكود</button>
+            <button class="modal-button secondary" onclick="closeCodeModal()">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLoginModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">تسجيل الدخول</h2>
+            <div class="form-group">
+                <label class="form-label">اسم المستخدم أو البريد الإلكتروني</label>
+                <input type="text" class="form-input" id="loginUsername">
+            </div>
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" class="form-input" id="loginPassword">
+            </div>
+            <button class="modal-button" onclick="handleLogin()">تسجيل الدخول</button>
+            <button class="modal-button secondary" onclick="closeLoginModal()">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignupModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">إنشاء حساب جديد</h2>
+            <div class="form-group">
+                <label class="form-label">الاسم الكامل</label>
+                <input type="text" class="form-input" id="signupFullName">
+            </div>
+            <div class="form-group">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input type="email" class="form-input" id="signupEmail">
+            </div>
+            <div class="form-group">
+                <label class="form-label">اسم المستخدم</label>
+                <input type="text" class="form-input" id="signupUsername">
+            </div>
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" class="form-input" id="signupPassword">
+            </div>
+            <div class="form-group">
+                <label class="form-label">تأكيد كلمة المرور</label>
+                <input type="password" class="form-input" id="signupConfirmPassword">
+            </div>
+            <div class="form-group">
+                <label class="form-label">رقم الهاتف</label>
+                <input type="tel" class="form-input" id="signupPhone">
+            </div>
+            <button class="modal-button" onclick="handleSignup()">إنشاء الحساب</button>
+            <button class="modal-button secondary" onclick="closeSignupModal()">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        // =======================================================
+        // Glitch Background Animation
+        // =======================================================
+        const setupGlitchCanvas = () => {
+            const canvas = document.getElementById('glitch-canvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789';
+            const lettersAndSymbols = Array.from(characters);
+            const fontSize = 16;
+            const charWidth = 10;
+            const charHeight = 20;
+            const glitchSpeed = 50;
+            let lastGlitchTime = Date.now();
+            let letters = [];
+            let grid = { columns: 0, rows: 0 };
+
+            const getRandomChar = () => lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
+            const getRandomColor = () => ['#2b4539', '#61dca3', '#61b3dc'][Math.floor(Math.random() * 3)];
+
+            const calculateGrid = (width, height) => ({
+                columns: Math.ceil(width / charWidth),
+                rows: Math.ceil(height / charHeight)
+            });
+
+            const initializeLetters = (columns, rows) => {
+                grid = { columns, rows };
+                const totalLetters = columns * rows;
+                letters = Array.from({ length: totalLetters }, () => ({
+                    char: getRandomChar(),
+                    color: getRandomColor()
+                }));
+            };
+
+            const resizeCanvas = () => {
+                const container = document.getElementById('glitch-background-container');
+                if (!container) return;
+
+                const rect = container.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                canvas.style.width = `${rect.width}px`;
+                canvas.style.height = `${rect.height}px`;
+
+                const newGrid = calculateGrid(rect.width, rect.height);
+                initializeLetters(newGrid.columns, newGrid.rows);
+            };
+
+            const drawLetters = () => {
+                if (letters.length === 0) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = `${fontSize}px monospace`;
+                ctx.textBaseline = 'top';
+
+                letters.forEach((letter, index) => {
+                    const x = (index % grid.columns) * charWidth;
+                    const y = Math.floor(index / grid.columns) * charHeight;
+                    ctx.fillStyle = letter.color;
+                    ctx.fillText(letter.char, x, y);
+                });
+            };
+
+            const updateLetters = () => {
+                const updateCount = Math.max(1, Math.floor(letters.length * 0.05));
+                for (let i = 0; i < updateCount; i++) {
+                    const index = Math.floor(Math.random() * letters.length);
+                    letters[index].char = getRandomChar();
+                    letters[index].color = getRandomColor();
+                }
+            };
+
+            const animate = () => {
+                const now = Date.now();
+                if (now - lastGlitchTime >= glitchSpeed) {
+                    updateLetters();
+                    drawLetters();
+                    lastGlitchTime = now;
+                }
+                animationFrameId = requestAnimationFrame(animate);
+            };
+
+            resizeCanvas();
+            animate();
+
+            window.addEventListener('resize', resizeCanvas);
+        };
+
+        // =======================================================
+        // PillNav Animation System
+        // =======================================================
+        const setupPillNav = () => {
+            const circleRefs = [];
+            const tlRefs = [];
+            const activeTweenRefs = [];
+            const logoImgRef = document.getElementById('pill-logo');
+            const logoTweenRef = { current: null };
+            const hamburgerRef = document.getElementById('mobile-menu-button');
+            const mobileMenuRef = document.getElementById('mobile-menu-popover');
+            const navItemsRef = document.getElementById('pill-nav-items');
+            const logoRef = document.getElementById('pill-logo');
+            const ease = 'power3.easeOut';
+            const initialLoadAnimation = true;
+
+            const layout = () => {
+                const pills = document.querySelectorAll('.pill');
+
+                pills.forEach((pill, i) => {
+                    const circle = pill.querySelector('.hover-circle');
+                    if (!circle || !pill.parentElement) return;
+
+                    const rect = pill.getBoundingClientRect();
+                    const { width: w, height: h } = rect;
+                    const R = ((w * w) / 4 + h * h) / (2 * h);
+                    const D = Math.ceil(2 * R) + 2;
+                    const delta = Math.ceil(R - Math.sqrt(Math.max(0, R * R - (w * w) / 4))) + 1;
+                    const originY = D - delta;
+
+                    circle.style.width = `${D}px`;
+                    circle.style.height = `${D}px`;
+                    circle.style.bottom = `-${delta}px`;
+
+                    gsap.set(circle, {
+                        xPercent: -50,
+                        scale: 0,
+                        transformOrigin: `50% ${originY}px`
+                    });
+
+                    const label = pill.querySelector('.pill-label');
+                    const white = pill.querySelector('.pill-label-hover');
+
+                    if (label) gsap.set(label, { y: 0 });
+                    if (white) gsap.set(white, { y: h + 12, opacity: 0 });
+
+                    circleRefs[i] = circle;
+
+                    tlRefs[i]?.kill();
+                    const tl = gsap.timeline({ paused: true });
+
+                    tl.to(circle, { scale: 1.2, xPercent: -50, duration: 2, ease, overwrite: 'auto' }, 0);
+
+                    if (label) {
+                        tl.to(label, { y: -(h + 8), duration: 2, ease, overwrite: 'auto' }, 0);
+                    }
+
+                    if (white) {
+                        gsap.set(white, { y: Math.ceil(h + 100), opacity: 0 });
+                        tl.to(white, { y: 0, opacity: 1, duration: 2, ease, overwrite: 'auto' }, 0);
+                    }
+
+                    tlRefs[i] = tl;
+
+                    pill.addEventListener('mouseenter', () => handleEnter(i));
+                    pill.addEventListener('mouseleave', () => handleLeave(i));
+                });
+            };
+
+            const handleEnter = i => {
+                const tl = tlRefs[i];
+                if (!tl) return;
+                activeTweenRefs[i]?.kill();
+                activeTweenRefs[i] = tl.tweenTo(tl.duration(), {
+                    duration: 0.3,
+                    ease,
+                    overwrite: 'auto'
+                });
+            };
+
+            const handleLeave = i => {
+                const tl = tlRefs[i];
+                if (!tl) return;
+                activeTweenRefs[i]?.kill();
+                activeTweenRefs[i] = tl.tweenTo(0, {
+                    duration: 0.2,
+                    ease,
+                    overwrite: 'auto'
+                });
+            };
+
+            const handleLogoEnter = () => {
+                if (!logoImgRef) return;
+                logoTweenRef.current?.kill();
+                gsap.set(logoImgRef, { rotate: 0 });
+                logoTweenRef.current = gsap.to(logoImgRef, {
+                    rotate: 360,
+                    duration: 0.2,
+                    ease,
+                    overwrite: 'auto'
+                });
+            };
+
+            layout();
+            window.addEventListener('resize', layout);
+
+            if (logoImgRef) {
+                logoImgRef.addEventListener('mouseenter', handleLogoEnter);
+            }
+
+            let isMobileMenuOpen = false;
+
+            if (hamburgerRef && mobileMenuRef) {
+                hamburgerRef.addEventListener('click', toggleMobileMenu);
+
+                function toggleMobileMenu() {
+                    isMobileMenuOpen = !isMobileMenuOpen;
+
+                    const lines = hamburgerRef.querySelectorAll('.hamburger-line');
+                    if (isMobileMenuOpen) {
+                        gsap.to(lines[0], { rotation: 45, y: 3, duration: 0.3, ease });
+                        gsap.to(lines[1], { rotation: -45, y: -3, duration: 0.3, ease });
+
+                        gsap.set(mobileMenuRef, { visibility: 'visible' });
+                        gsap.fromTo(
+                            mobileMenuRef,
+                            { opacity: 0, y: 10, scaleY: 1 },
+                            {
+                                opacity: 1,
+                                y: 0,
+                                scaleY: 1,
+                                duration: 0.3,
+                                ease,
+                                transformOrigin: 'top center'
+                            }
+                        );
+                    } else {
+                        gsap.to(lines[0], { rotation: 0, y: 0, duration: 0.3, ease });
+                        gsap.to(lines[1], { rotation: 0, y: 0, duration: 0.3, ease });
+
+                        gsap.to(mobileMenuRef, {
+                            opacity: 0,
+                            y: 10,
+                            scaleY: 1,
+                            duration: 0.2,
+                            ease,
+                            transformOrigin: 'top center',
+                            onComplete: () => {
+                                gsap.set(mobileMenuRef, { visibility: 'hidden' });
+                            }
+                        });
+                    }
+                }
+            }
+
+            if (initialLoadAnimation) {
+                if (logoRef) {
+                    gsap.set(logoRef, { scale: 0 });
+                    gsap.to(logoRef, {
+                        scale: 1,
+                        duration: 0.6,
+                        ease
+                    });
+                }
+
+                if (navItemsRef) {
+                    gsap.set(navItemsRef, { width: 0, overflow: 'hidden' });
+                    gsap.to(navItemsRef, {
+                        width: 'auto',
+                        duration: 0.6,
+                        ease
+                    });
+                }
+            }
+        };
+
+        // =======================================================
+        // CourseLoop Animation System (LogoLoop for Courses)
+        // =======================================================
+        const setupCourseLoop = () => {
+            const containerRef = document.getElementById('coursesLoop');
+            const trackRef = document.getElementById('coursesTrack');
+            const seqRefs = [];
+
+            const courses = [
+                { name: 'HTML & CSS', title: 'تطوير واجهات الويب الأساسية', desc: 'تعلم أساسيات تطوير واجهات الويب باستخدام HTML و CSS.', price: 300 },
+                { name: 'JavaScript', title: 'برمجة JavaScript التفاعلية', desc: 'أتقن لغة JavaScript لإضافة التفاعل إلى مواقع الويب.', price: 400 },
+                { name: 'React JS', title: 'بناء تطبيقات React المتقدمة', desc: 'تعلم React لبناء واجهات مستخدم قوية وفعالة.', price: 500 },
+                { name: 'Tailwind CSS', title: 'تصميم سريع باستخدام Tailwind', desc: 'استخدم إطار عمل Tailwind CSS لتنسيق مواقع الويب.', price: 350 },
+                { name: 'Node.js', title: 'تطوير Backend مع Node.js', desc: 'أنشئ تطبيقات خادم قوية باستخدام Node.js.', price: 450 },
+                { name: 'Python', title: 'برمجة Python للمبتدئين', desc: 'تعلم أساسيات Python للبرمجة وتحليل البيانات.', price: 400 }
+            ];
+
+            const ANIMATION_CONFIG = {
+                SMOOTH_TAU: 0.25,
+                MIN_COPIES: 2,
+                COPY_HEADROOM: 2
+            };
+
+            let seqWidth = 0;
+            let copyCount = ANIMATION_CONFIG.MIN_COPIES;
+            let isHovered = false;
+            const speed = 80;
+            const direction = 'left';
+            const pauseOnHover = true;
+
+            const targetVelocity = () => {
+                const magnitude = Math.abs(speed);
+                const directionMultiplier = direction === 'left' ? 1 : -1;
+                const speedMultiplier = speed < 0 ? -1 : 1;
+                return magnitude * directionMultiplier * speedMultiplier;
+            };
+
+            const updateDimensions = () => {
+                const containerWidth = containerRef?.clientWidth ?? 0;
+                let sequenceWidth = 0;
+
+                const firstList = trackRef?.querySelector('.courseloop__list');
+                if (firstList) {
+                    sequenceWidth = firstList.getBoundingClientRect().width;
+                }
+
+                if (sequenceWidth > 0) {
+                    seqWidth = Math.ceil(sequenceWidth);
+                    const copiesNeeded = Math.ceil(containerWidth / sequenceWidth) + ANIMATION_CONFIG.COPY_HEADROOM;
+                    copyCount = Math.max(ANIMATION_CONFIG.MIN_COPIES, copiesNeeded);
+                    createCourseLists();
+                }
+            };
+
+            const createCourseCard = (course, key) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-img">${course.name}</div>
+                    <div class="card-content">
+                        <h3>${course.title}</h3>
+                        <p>${course.desc}</p>
+                        <div class="card-buttons">
+                            <button class="card-button" onclick="openPaymentModal('${course.name}', ${course.price})">اشترك في الكورس</button>
+                            <button class="card-button secondary" onclick="openCodeModal()">أدخل كود الكورس</button>
+                        </div>
+                    </div>
+                `;
+                return card;
+            };
+
+            const createCourseLists = () => {
+                if (!trackRef) return;
+
+                trackRef.innerHTML = '';
+
+                for (let copyIndex = 0; copyIndex < copyCount; copyIndex++) {
+                    const list = document.createElement('div');
+                    list.className = 'courseloop__list';
+
+                    if (copyIndex === 0) {
+                        seqRefs[0] = list;
+                    }
+
+                    courses.forEach((course, courseIndex) => {
+                        const item = document.createElement('div');
+                        item.className = 'courseloop__item';
+                        item.appendChild(createCourseCard(course, `${copyIndex}-${courseIndex}`));
+                        list.appendChild(item);
+                    });
+
+                    trackRef.appendChild(list);
+                }
+
+                setTimeout(updateDimensions, 100);
+            };
+
+            const rafRef = { current: null };
+            const lastTimestampRef = { current: null };
+            const offsetRef = { current: 0 };
+            const velocityRef = { current: 0 };
+
+            const animate = (timestamp) => {
+                if (lastTimestampRef.current === null) {
+                    lastTimestampRef.current = timestamp;
+                }
+
+                const deltaTime = Math.max(0, timestamp - lastTimestampRef.current) / 1000;
+                lastTimestampRef.current = timestamp;
+
+                const target = pauseOnHover && isHovered ? 0 : targetVelocity();
+
+                const easingFactor = 1 - Math.exp(-deltaTime / ANIMATION_CONFIG.SMOOTH_TAU);
+                velocityRef.current += (target - velocityRef.current) * easingFactor;
+
+                if (seqWidth > 0) {
+                    let nextOffset = offsetRef.current + velocityRef.current * deltaTime;
+                    nextOffset = ((nextOffset % seqWidth) + seqWidth) % seqWidth;
+                    offsetRef.current = nextOffset;
+
+                    const translateX = -offsetRef.current;
+                    if (trackRef) {
+                        trackRef.style.transform = `translate3d(${translateX}px, 0, 0)`;
+                    }
+                }
+
+                rafRef.current = requestAnimationFrame(animate);
+            };
+
+            rafRef.current = requestAnimationFrame(animate);
+
+            if (containerRef) {
+                containerRef.addEventListener('mouseenter', () => {
+                    if (pauseOnHover) isHovered = true;
+                });
+
+                containerRef.addEventListener('mouseleave', () => {
+                    if (pauseOnHover) isHovered = false;
+                });
+            }
+
+            createCourseLists();
+            window.addEventListener('resize', updateDimensions);
+
+            return () => {
+                if (rafRef.current !== null) {
+                    cancelAnimationFrame(rafRef.current);
+                }
+            };
+        };
+
+        // =======================================================
+        // Modal Functions
+        // =======================================================
+        let currentCourse = '';
+
+        function openPaymentModal(courseName, price) {
+            currentCourse = courseName;
+            document.getElementById('courseAmount').textContent = price + ' جنيه';
+            document.getElementById('paymentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.body.style.overflow = '';
+            if (currentCourse) {
+                alert('شكراً لك! سيتم تفعيل الكورس: ' + currentCourse + ' خلال 24 ساعة بعد التحقق من الدفع.');
+                currentCourse = '';
+            }
+        }
+
+        function openCodeModal() {
+            document.getElementById('codeModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('courseCode').focus();
+        }
+
+        function closeCodeModal() {
+            document.getElementById('codeModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('courseCode').value = '';
+        }
+
+        function validateCode() {
+            const code = document.getElementById('courseCode').value.trim();
+            if (code === '') {
+                alert('يرجى إدخال كود الكورس');
+                return;
+            }
+            alert('تم تفعيل الكود بنجاح! يمكنك الآن الوصول إلى محتوى الكورس.');
+            closeCodeModal();
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function openSignupModal() {
+            document.getElementById('signupModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSignupModal() {
+            document.getElementById('signupModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+
+            alert('تم تسجيل الدخول بنجاح! مرحباً ' + username);
+            closeLoginModal();
+        }
+
+        function handleSignup() {
+            const fullName = document.getElementById('signupFullName').value;
+            const email = document.getElementById('signupEmail').value;
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const phone = document.getElementById('signupPhone').value;
+
+            if (!fullName || !email || !username || !password || !confirmPassword || !phone) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('كلمة المرور غير متطابقة');
+                return;
+            }
+
+            alert('تم إنشاء الحساب بنجاح! تم إرسال رسالة تأكيد إلى بريدك الإلكتروني.');
+            closeSignupModal();
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // =======================================================
+        // Language Switching
+        // =======================================================
+        function switchLanguage() {
+            const body = document.getElementById('body-content');
+            const currentLang = body.getAttribute('lang');
+            const newLang = currentLang === 'ar' ? 'en' : 'ar';
+
+            localStorage.setItem('preferredLanguage', newLang);
+            location.reload();
+        }
+
+        function loadPreferredLanguage() {
+            const preferredLang = localStorage.getItem('preferredLanguage') || 'ar';
+            const body = document.getElementById('body-content');
+            const switcher = document.getElementById('language-switcher');
+            const mobileSwitcher = document.getElementById('mobile-language-switcher');
+
+            body.setAttribute('lang', preferredLang);
+            document.documentElement.setAttribute('dir', preferredLang === 'ar' ? 'rtl' : 'ltr');
+
+            if (preferredLang === 'ar') {
+                switcher.textContent = 'English';
+                mobileSwitcher.textContent = 'English';
+            } else {
+                switcher.textContent = 'العربية';
+                mobileSwitcher.textContent = 'العربية';
+            }
+        }
+
+        // =======================================================
+        // Initialization
+        // =======================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPreferredLanguage();
+            setupGlitchCanvas();
+            setupPillNav();
+            setupCourseLoop();
+
+            document.getElementById('language-switcher').addEventListener('click', switchLanguage);
+            document.getElementById('mobile-language-switcher').addEventListener('click', switchLanguage);
+        });
+    </script>
+</body>
+
+</html>
