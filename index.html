@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lam3Code | منصة تعليم البرمجة</title>
+    <title>Lam3Code | منصة تعلم البرمجة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         /* ==========================
-           1. Global Styles & Dark Theme
+           1. Global Styles & Theme Variables
            ========================== */
         * {
             margin: 0;
@@ -19,6 +18,7 @@
         }
 
         :root {
+            /* Codey Mode (Dark Theme) - Default */
             --primary-color: #3498db;
             --secondary-color: #61dca3;
             --accent-color: #e74c3c;
@@ -28,6 +28,73 @@
             --card-bg: rgba(255, 255, 255, 0.1);
             --text-color: #ecf0f1;
             --modal-bg: rgba(0, 0, 0, 0.95);
+            --nav-bg: rgba(0, 0, 0, 0.7);
+            --hero-gradient: linear-gradient(135deg, rgba(52, 152, 219, 0.8), rgba(44, 62, 80, 0.8));
+            --section-bg: rgba(0, 0, 0, 0.75);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(52, 152, 219, 0.2);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(0, 0, 0, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Standard Mode (Natural Colors) */
+        body.standard-mode {
+            --primary-color: #2c5aa0;
+            --secondary-color: #4a9c7d;
+            --accent-color: #c44569;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --dark-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --modal-bg: rgba(255, 255, 255, 0.95);
+            --nav-bg: rgba(255, 255, 255, 0.7);
+            --hero-gradient: linear-gradient(135deg, #2c5aa0, #3498db);
+            --section-bg: rgba(248, 249, 250, 0.9);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-color: rgba(44, 62, 80, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --footer-bg: #e9ecef;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+        }
+
+        /* Light Mode Override - يعمل مع جميع الثيمات */
+        body.light-mode-override {
+            --dark-bg: #ffffff !important;
+            --card-bg: #f8f9fa !important;
+            --text-color: #202124 !important;
+            --modal-bg: rgba(255, 255, 255, 0.98) !important;
+            --nav-bg: rgba(255, 255, 255, 0.8) !important;
+            --section-bg: rgba(248, 249, 250, 0.95) !important;
+            --border-color: rgba(0, 0, 0, 0.08) !important;
+            --shadow-color: rgba(0, 0, 0, 0.1) !important;
+            --input-bg: #ffffff !important;
+            --footer-bg: #f1f3f4 !important;
+            --glass-bg: rgba(255, 255, 255, 0.8) !important;
+            --glass-border: rgba(255, 255, 255, 0.4) !important;
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
+        }
+
+        /* Dark Mode Override - يعمل مع جميع الثيمات */
+        body.dark-mode-override {
+            --dark-bg: #000000 !important;
+            --card-bg: rgba(255, 255, 255, 0.1) !important;
+            --text-color: #ecf0f1 !important;
+            --modal-bg: rgba(0, 0, 0, 0.95) !important;
+            --nav-bg: rgba(0, 0, 0, 0.8) !important;
+            --section-bg: rgba(0, 0, 0, 0.75) !important;
+            --border-color: rgba(255, 255, 255, 0.1) !important;
+            --shadow-color: rgba(52, 152, 219, 0.2) !important;
+            --input-bg: rgba(255, 255, 255, 0.1) !important;
+            --footer-bg: rgba(0, 0, 0, 0.9) !important;
+            --glass-bg: rgba(255, 255, 255, 0.1) !important;
+            --glass-border: rgba(255, 255, 255, 0.2) !important;
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
         }
 
         body {
@@ -37,9 +104,10 @@
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Glitch Background */
+        /* Glitch Background - Hidden in Standard and Light modes */
         #glitch-background-container {
             position: fixed;
             top: 0;
@@ -47,6 +115,13 @@
             width: 100%;
             height: 100%;
             z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+
+        body.standard-mode #glitch-background-container,
+        body.light-mode-override #glitch-background-container {
+            opacity: 0;
+            pointer-events: none;
         }
 
         #glitch-canvas {
@@ -65,6 +140,11 @@
             background: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 100%);
         }
 
+        body.standard-mode .outer-vignette,
+        body.light-mode-override .outer-vignette {
+            display: none;
+        }
+
         .container {
             width: 95%;
             max-width: 1200px;
@@ -72,341 +152,25 @@
             padding: 0 15px;
         }
 
-        /* ==========================
-           PillNav Styles
-           ========================== */
-        .pill-nav-container {
-            position: absolute;
-            top: 1em;
-            z-index: 99;
-            width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .pill-nav-container {
-                width: 100%;
-                left: 0;
-            }
-        }
-
-        .pill-nav {
-            --nav-h: 42px;
-            --logo: 36px;
-            --pill-pad-x: 18px;
-            --pill-gap: 3px;
-            width: max-content;
-            display: flex;
-            align-items: center;
-            box-sizing: border-box;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        @media (max-width: 768px) {
-            .pill-nav {
-                width: 100%;
-                justify-content: space-between;
-                padding: 0 1rem;
-                background: transparent;
-            }
-        }
-
-        .pill-nav-items {
-            position: relative;
-            display: flex;
-            align-items: center;
-            height: var(--nav-h);
-            background: var(--base, #000);
-            border-radius: 9999px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .pill-logo {
-            width: var(--nav-h);
-            height: var(--nav-h);
-            border-radius: 50%;
-            background: var(--base, #000);
-            padding: 8px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-left: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .pill-logo span {
-            color: var(--pill-bg, #fff);
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .pill-list {
-            list-style: none;
-            display: flex;
-            align-items: stretch;
-            gap: var(--pill-gap);
-            margin: 0;
-            padding: 3px;
-            height: 100%;
-        }
-
-        .pill-list>li {
-            display: flex;
-            height: 100%;
-        }
-
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            padding: 0 var(--pill-pad-x);
-            background: var(--pill-bg, #fff);
-            color: var(--pill-text, var(--base, #000));
-            text-decoration: none;
-            border-radius: 9999px;
-            box-sizing: border-box;
-            font-weight: 600;
-            font-size: 16px;
-            line-height: 0;
-            text-transform: uppercase;
-            letter-spacing: 0.2px;
-            white-space: nowrap;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pill .hover-circle {
-            position: absolute;
-            left: 50%;
-            bottom: 0;
-            border-radius: 50%;
-            background: var(--base, #000);
-            z-index: 1;
-            display: block;
-            pointer-events: none;
-            will-change: transform;
-        }
-
-        .pill .label-stack {
-            position: relative;
-            display: inline-block;
-            line-height: 1;
-            z-index: 2;
-        }
-
-        .pill .pill-label {
-            position: relative;
-            z-index: 2;
-            display: inline-block;
-            line-height: 1;
-            will-change: transform;
-        }
-
-        .pill .pill-label-hover {
-            position: absolute;
-            left: 0;
-            top: 0;
-            color: var(--hover-text, #fff);
-            z-index: 3;
-            display: inline-block;
-            will-change: transform, opacity;
-        }
-
-        .pill.is-active::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 12px;
-            background: var(--base, #000);
-            border-radius: 50px;
-            z-index: 4;
-        }
-
-        .desktop-only {
-            display: block;
-        }
-
-        .mobile-only {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .desktop-only {
-                display: none;
-            }
-
-            .mobile-only {
-                display: block;
-            }
-        }
-
-        .mobile-menu-button {
-            width: var(--nav-h);
-            height: var(--nav-h);
-            border-radius: 50%;
-            background: var(--base, #000);
-            border: none;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            cursor: pointer;
-            padding: 0;
-            position: relative;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-button {
-                display: flex;
-            }
-        }
-
-        .hamburger-line {
-            width: 16px;
-            height: 2px;
-            background: var(--pill-bg, #fff);
-            border-radius: 1px;
-            transition: all 0.01s ease;
-            transform-origin: center;
-        }
-
-        .mobile-menu-popover {
-            position: absolute;
-            top: 3em;
-            left: 1rem;
-            right: 1rem;
-            background: var(--base, #f0f0f0);
-            border-radius: 27px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            z-index: 998;
-            opacity: 0;
-            transform-origin: top center;
-            visibility: hidden;
-        }
-
-        .mobile-menu-list {
-            list-style: none;
-            margin: 0;
-            padding: 3px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .mobile-menu-popover .mobile-menu-link {
-            display: block;
-            padding: 12px 16px;
-            color: var(--pill-text, #fff);
-            background-color: var(--pill-bg, #fff);
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            border-radius: 50px;
-            transition: all 0.2s ease;
-        }
-
-        .mobile-menu-popover .mobile-menu-link:hover {
-            cursor: pointer;
-            background-color: var(--base);
-            color: var(--hover-text, #fff);
-        }
-
-        /* ==========================
-           LogoLoop Animation for Courses
-           ========================== */
-        .courseloop {
-            position: relative;
-            overflow-x: hidden;
-            --courseloop-gap: 30px;
-            --courseloop-cardWidth: 300px;
-            --courseloop-fadeColor: #000000;
-        }
-
-        .courseloop--fade::before,
-        .courseloop--fade::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: clamp(24px, 8%, 120px);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .courseloop--fade::before {
-            left: 0;
-            background: linear-gradient(to right,
-                    var(--courseloop-fadeColor) 0%,
-                    rgba(0, 0, 0, 0) 100%);
-        }
-
-        .courseloop--fade::after {
-            right: 0;
-            background: linear-gradient(to left,
-                    var(--courseloop-fadeColor) 0%,
-                    rgba(0, 0, 0, 0) 100%);
-        }
-
-        .courseloop__track {
-            display: flex;
-            width: max-content;
-            will-change: transform;
-            user-select: none;
-        }
-
-        .courseloop__list {
-            display: flex;
-            align-items: center;
-        }
-
-        .courseloop__item {
-            flex: 0 0 auto;
-            margin-right: var(--courseloop-gap);
-            width: var(--courseloop-cardWidth);
-        }
-
-        .courseloop__item:last-child {
-            margin-right: var(--courseloop-gap);
-        }
-
-        .courseloop--scale-hover .courseloop__item {
-            overflow: visible;
-        }
-
-        .courseloop--scale-hover .courseloop__item:hover .card {
-            transform: scale(1.05);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .courseloop__track {
-                transform: translate3d(0, 0, 0) !important;
-            }
-
-            .courseloop__item .card {
-                transition: none !important;
-            }
-        }
-
-        /* ==========================
-           Content Sections
-           ========================== */
+        /* Content Sections */
         .hero,
         .courses,
         .video-section,
         .features,
+        .faq-section,
         footer {
-            background-color: rgba(0, 0, 0, 0.75);
+            background-color: var(--section-bg);
             padding: 60px 0;
             margin-bottom: 20px;
-            border-top: 1px solid rgba(52, 152, 219, 0.1);
+            border-top: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            z-index: 1003;
         }
 
         .section-title {
@@ -418,9 +182,10 @@
         }
 
         .hero {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.8), rgba(44, 62, 80, 0.8));
+            background: var(--hero-gradient);
             padding: 100px 0 80px;
             text-align: center;
+            transition: background 0.3s ease;
         }
 
         .hero h1 {
@@ -450,41 +215,514 @@
             transition: all 0.3s ease;
             font-weight: bold;
             display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .cta-button:hover {
-            background-color: #4ecf91;
+            background-color: var(--secondary-color);
+            filter: brightness(0.9);
             transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         /* ==========================
-           Courses & Cards
+           2. Navigation - Glassy Design
            ========================== */
-        .courses {
-            overflow: hidden;
-            padding: 50px 0;
+
+        .main-nav-wrapper {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s ease;
         }
 
-        .courses-container {
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-buttons button {
+            background: linear-gradient(135deg, var(--accent-color), #ff6b6b);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
         }
 
+        .auth-buttons button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .auth-buttons button:hover::before {
+            left: 100%;
+        }
+
+        .auth-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #theme-switcher {
+            background: linear-gradient(135deg, var(--primary-color), #6a89cc);
+        }
+
+        #language-switcher {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        /* GooeyNav Styles */
+        .gooey-nav-container {
+            display: inline-block;
+            position: relative;
+            border-radius: 25px;
+            filter: url(#goo);
+            --color-1: var(--primary-color);
+            --color-2: var(--accent-color);
+            --color-3: var(--secondary-color);
+            --color-4: var(--warning-color);
+            transition: all 0.3s;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .gooey-nav-container nav {
+            position: relative;
+            z-index: 10;
+            padding: 8px 10px;
+            border-radius: 25px;
+        }
+
+        .gooey-nav-container .nav-links {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .gooey-nav-container li a {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            position: relative;
+            z-index: 20;
+        }
+
+        .gooey-nav-container li.active a {
+            color: var(--secondary-color);
+        }
+
+        .gooey-nav-container .effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-radius: 15px;
+            transition: all var(--time, 600ms) cubic-bezier(0.7, -0.5, 0.3, 1.5);
+            pointer-events: none
+        }
+
+        .gooey-nav-container .effect.filter {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            z-index: 5;
+            will-change: transform;
+        }
+
+        .gooey-nav-container .effect.text {
+            z-index: 2;
+            overflow: hidden;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .gooey-nav-container .effect.text::after {
+            content: attr(data-text);
+            color: #fff;
+            font-weight: 600;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 0;
+            transform: translateY(100%);
+            transition: all var(--time, 600ms) cubic-bezier(0.7, -0.5, 0.3, 1.5);
+        }
+
+        .gooey-nav-container .effect.text.active::after {
+            transform: translateY(0%);
+        }
+
+        .gooey-nav-container .particle {
+            --start-x: 0px;
+            --start-y: 0px;
+            --end-x: 0px;
+            --end-y: 0px;
+            --time: 600ms;
+            --scale: 1;
+            --color: white;
+            --rotate: 0deg;
+
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .gooey-nav-container .particle .point {
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--color);
+            border-radius: 50%;
+            transform: translate(var(--start-x), var(--start-y)) scale(var(--scale)) rotate(var(--rotate));
+            opacity: 1;
+            transition: all var(--time) cubic-bezier(0.2, 1, 0.5, 1);
+            will-change: transform, opacity;
+        }
+
+        .gooey-nav-container .filter.active .particle .point {
+            transform: translate(var(--end-x), var(--end-y)) scale(0) rotate(var(--rotate));
+            opacity: 0;
+        }
+
+        /* Dark/Light Mode Switch Styles - محسن */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #2196f3, #21cbf3);
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+            z-index: 0;
+            overflow: hidden;
+            border-radius: 34px;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .sun-moon {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #ffeb3b;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #000428, #004e92);
+        }
+
+        input:checked + .slider .sun-moon {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            animation: rotate-center 0.6s ease-in-out both;
+        }
+
+        .moon-dot {
+            opacity: 0;
+            transition: 0.4s;
+            fill: #b0b0b0;
+            position: absolute;
+        }
+
+        input:checked + .slider .sun-moon .moon-dot {
+            opacity: 1;
+        }
+
+        #moon-dot-1 {
+            left: 8px;
+            top: 5px;
+            width: 4px;
+            height: 4px;
+        }
+
+        #moon-dot-2 {
+            left: 3px;
+            top: 12px;
+            width: 6px;
+            height: 6px;
+        }
+
+        #moon-dot-3 {
+            left: 14px;
+            top: 16px;
+            width: 3px;
+            height: 3px;
+        }
+
+        .light-ray {
+            position: absolute;
+            fill: #ffeb3b;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        input:not(:checked) + .slider .light-ray {
+            opacity: 0.2;
+        }
+
+        #light-ray-1 {
+            left: -8px;
+            top: -8px;
+            width: 43px;
+            height: 43px;
+        }
+
+        #light-ray-2 {
+            left: -15px;
+            top: -15px;
+            width: 55px;
+            height: 55px;
+        }
+
+        #light-ray-3 {
+            left: -18px;
+            top: -18px;
+            width: 60px;
+            height: 60px;
+        }
+
+        .cloud {
+            position: absolute;
+            fill: rgba(255, 255, 255, 0.8);
+            animation-name: cloud-move;
+            animation-duration: 6s;
+            animation-iteration-count: infinite;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        input:not(:checked) + .slider .cloud {
+            opacity: 1;
+        }
+
+        #cloud-1 {
+            left: 30px;
+            top: 15px;
+            width: 40px;
+        }
+
+        #cloud-2 {
+            left: 44px;
+            top: 10px;
+            width: 20px;
+        }
+
+        #cloud-3 {
+            left: 18px;
+            top: 24px;
+            width: 30px;
+        }
+
+        @keyframes cloud-move {
+            0% {
+                transform: translateX(0px);
+            }
+
+            40% {
+                transform: translateX(4px);
+            }
+
+            80% {
+                transform: translateX(-4px);
+            }
+
+            100% {
+                transform: translateX(0px);
+            }
+        }
+
+        .stars {
+            transform: translateY(-32px);
+            opacity: 0;
+            transition: 0.4s;
+        }
+
+        .star-svg {
+            fill: white;
+            position: absolute;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+            animation-name: star-twinkle;
+            animation-duration: 2s;
+            animation-iteration-count: infinite;
+        }
+
+        input:checked + .slider .stars {
+            -webkit-transform: translateY(0);
+            -ms-transform: translateY(0);
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        #star-1 {
+            width: 20px;
+            top: 2px;
+            left: 3px;
+            animation-delay: 0.3s;
+        }
+
+        #star-2 {
+            width: 6px;
+            top: 16px;
+            left: 3px;
+        }
+
+        #star-3 {
+            width: 12px;
+            top: 20px;
+            left: 10px;
+            animation-delay: 0.6s;
+        }
+
+        #star-4 {
+            width: 18px;
+            top: 0px;
+            left: 18px;
+            animation-delay: 1.3s;
+        }
+
+        @keyframes star-twinkle {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes rotate-center {
+            0% {
+                transform: translateX(26px) rotate(0);
+            }
+            100% {
+                transform: translateX(26px) rotate(360deg);
+            }
+        }
+
+        /* ==========================
+           3. Improved Courses Section
+           ========================== */
+        .courses {
+            padding: 50px 0;
+            position: relative;
+        }
+
+        .courses-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .cards-loop-container {
+            position: relative;
+            width: 100%;
+            padding: 20px 0;
+            overflow-x: auto;
+            cursor: grab;
+        }
+
+        .cards-loop-container:active {
+            cursor: grabbing;
+        }
+
+        .cards-track {
+            display: flex;
+            width: max-content;
+            will-change: transform;
+            user-select: none;
+            gap: 30px;
+            padding: 10px;
+        }
+
         .card {
-            background-color: var(--card-bg);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
             min-width: 300px;
             flex-shrink: 0;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 20px;
             transition: all 0.3s ease;
             text-align: center;
-            height: 100%;
+            cursor: pointer;
+            position: relative;
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
 
         .card-img {
@@ -501,13 +739,57 @@
             color: var(--primary-color);
             font-size: 20px;
             margin-bottom: 12px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .card-content p {
-            color: #bdc3c7;
+            color: var(--text-color);
+            opacity: 0.8;
             margin-bottom: 20px;
             font-size: 15px;
             line-height: 1.5;
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-rating {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            direction: ltr;
+        }
+
+        .star {
+            font-size: 18px;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star.active {
+            color: var(--warning-color);
+        }
+
+        .star:hover {
+            color: var(--warning-color);
+        }
+
+        .rating-text {
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.7;
+            text-align: center;
         }
 
         .card-buttons {
@@ -517,28 +799,61 @@
         }
 
         .card-button {
-            background-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--accent-color), #ff6b6b);
             color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 15px;
             transition: all 0.3s ease;
             width: 100%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .card-button:hover::before {
+            left: 100%;
         }
 
         .card-button:hover {
-            background-color: #c0392b;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         .card-button.secondary {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), #6a89cc);
         }
 
-        .card-button.secondary:hover {
-            background-color: #2980b9;
+        /* Scrollbar Styling */
+        .cards-loop-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .cards-loop-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .cards-loop-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .cards-loop-container::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
         }
 
         .feature-icon {
@@ -548,7 +863,137 @@
         }
 
         /* ==========================
-           Modal Styles
+           4. Mobile Navigation
+           ========================== */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1003;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: var(--glass-bg);
+        }
+
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1002;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+            border-left: 1px solid var(--glass-border);
+        }
+
+        .mobile-nav.active {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-links {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .mobile-nav-links li {
+            margin-bottom: 15px;
+        }
+
+        .mobile-nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 15px;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .mobile-nav-links a:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .mobile-auth-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mobile-auth-buttons button {
+            background: linear-gradient(135deg, var(--accent-color), #ff6b6b);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-auth-buttons button:hover {
+            transform: translateY(-2px);
+        }
+
+        .mobile-theme-switcher,
+        .mobile-dark-mode-toggle,
+        .mobile-language-switcher {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .mobile-theme-switcher button,
+        .mobile-language-switcher button {
+            background: linear-gradient(135deg, var(--primary-color), #6a89cc);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-theme-switcher button:hover,
+        .mobile-language-switcher button:hover {
+            transform: translateY(-2px);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ==========================
+           5. Modal Styles
            ========================== */
         .modal {
             display: none;
@@ -568,14 +1013,16 @@
         }
 
         .modal-content {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             padding: 40px;
-            border-radius: 15px;
+            border-radius: 20px;
             max-width: 500px;
             width: 90%;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--glass-shadow);
             position: relative;
         }
 
@@ -588,6 +1035,13 @@
             color: var(--text-color);
             font-size: 24px;
             cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .modal-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .modal-title {
@@ -597,7 +1051,8 @@
         }
 
         .modal-text {
-            color: #bdc3c7;
+            color: var(--text-color);
+            opacity: 0.8;
             font-size: 16px;
             line-height: 1.6;
             margin-bottom: 25px;
@@ -618,9 +1073,9 @@
         .form-input {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--input-bg);
             color: var(--text-color);
             font-size: 16px;
             transition: border-color 0.3s;
@@ -634,8 +1089,13 @@
         .payment-info {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
             margin: 25px 0;
+        }
+
+        body.standard-mode .payment-info,
+        body.light-mode-override .payment-info {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .payment-number {
@@ -652,12 +1112,46 @@
             margin: 10px 0;
         }
 
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .payment-method {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        body.standard-mode .payment-method,
+        body.light-mode-override .payment-method {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-method:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        body.standard-mode .payment-method:hover,
+        body.light-mode-override .payment-method:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-method.active {
+            border-color: var(--secondary-color);
+        }
+
         .code-input {
             width: 100%;
             padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--input-bg);
             color: var(--text-color);
             font-size: 16px;
             text-align: center;
@@ -665,35 +1159,49 @@
         }
 
         .modal-button {
-            background-color: var(--secondary-color);
+            background: linear-gradient(135deg, var(--secondary-color), #4cd964);
             color: #000;
             border: none;
             padding: 15px 30px;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
             transition: all 0.3s ease;
             width: 100%;
             margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .modal-button:hover::before {
+            left: 100%;
         }
 
         .modal-button:hover {
-            background-color: #4ecf91;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         .modal-button.secondary {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), #6a89cc);
             color: white;
         }
 
-        .modal-button.secondary:hover {
-            background-color: #2980b9;
-        }
-
         /* ==========================
-           Video Section
+           6. Video Section
            ========================== */
         .video-section {
             padding: 50px 0;
@@ -707,9 +1215,12 @@
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
-            background-color: #2c3e50;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
         }
 
         .video-placeholder {
@@ -722,11 +1233,16 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-placeholder:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .video-placeholder .fa-play-circle {
             font-size: 80px;
-            color: #3498db;
+            color: var(--primary-color);
             transition: color 0.3s;
         }
 
@@ -734,11 +1250,12 @@
             text-align: center;
             margin-top: 20px;
             font-size: 16px;
-            color: #bdc3c7;
+            color: var(--text-color);
+            opacity: 0.8;
         }
 
         /* ==========================
-           Features Section
+           7. Features Section
            ========================== */
         .features {
             padding: 50px 0;
@@ -752,19 +1269,22 @@
         }
 
         .feature-card {
-            background-color: var(--card-bg);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
             min-width: 300px;
             flex: 1;
-            padding: 25px 20px;
-            border-radius: 10px;
+            padding: 30px 25px;
+            border-radius: 20px;
             text-align: center;
             transition: all 0.3s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
 
         .feature-card h3 {
@@ -774,18 +1294,152 @@
         }
 
         .feature-card p {
-            color: #bdc3c7;
+            color: var(--text-color);
+            opacity: 0.8;
             font-size: 16px;
             line-height: 1.6;
         }
 
         /* ==========================
-           Footer
+           8. FAQ Section
+           ========================== */
+        .faq-section {
+            padding: 50px 0;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .faq-question {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .faq-question:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.standard-mode .faq-question:hover,
+        body.light-mode-override .faq-question:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .faq-question h3 {
+            color: var(--primary-color);
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .faq-question i {
+            color: var(--secondary-color);
+            transition: transform 0.3s;
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, padding 0.3s;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 20px 20px;
+            max-height: 500px;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        /* ==========================
+           9. Notification System
+           ========================== */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            max-width: 350px;
+        }
+
+        .notification {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: var(--glass-shadow);
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification.error {
+            border-left-color: var(--accent-color);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .notification.info {
+            border-left-color: var(--primary-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* ==========================
+           10. Footer
            ========================== */
         footer {
             padding: 50px 0 20px;
-            background-color: rgba(0, 0, 0, 0.9);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             margin-bottom: 0;
+            border-top: 1px solid var(--glass-border);
         }
 
         .footer-content {
@@ -793,7 +1447,7 @@
             justify-content: space-between;
             flex-wrap: wrap;
             padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .footer-section {
@@ -808,7 +1462,8 @@
         }
 
         .footer-section p {
-            color: #bdc3c7;
+            color: var(--text-color);
+            opacity: 0.8;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -817,16 +1472,26 @@
 
         .footer-section a {
             display: block;
-            color: #ecf0f1;
+            color: var(--text-color);
             text-decoration: none;
             margin-bottom: 5px;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--secondary-color);
         }
 
         .social-icons a {
             display: inline-block;
             margin-left: 10px;
             font-size: 20px;
-            color: #61dca3;
+            color: var(--secondary-color);
+            transition: transform 0.3s;
+        }
+
+        .social-icons a:hover {
+            transform: translateY(-3px);
         }
 
         .footer-bottom {
@@ -835,14 +1500,272 @@
         }
 
         /* ==========================
-           Responsive Styles
+           11. Rating Modal Stars Styles
+           ========================== */
+        .rating-stars-modal {
+            margin: 25px 0;
+        }
+
+        .stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            direction: ltr;
+        }
+
+        .star-modal {
+            font-size: 40px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .star-modal.active {
+            color: var(--warning-color);
+            transform: scale(1.2);
+            text-shadow: 0 0 15px var(--warning-color);
+        }
+
+        .star-modal:hover {
+            color: var(--warning-color);
+            transform: scale(1.3);
+        }
+
+        .rating-text-modal {
+            font-size: 18px;
+            color: var(--text-color);
+            font-weight: bold;
+            min-height: 25px;
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        /* ==========================
+           12. Vodafone Cash Payment System Styles
+           ========================== */
+        .vodafone-payment-steps {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .payment-step {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            max-width: 150px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .payment-instructions {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-right: 4px solid var(--secondary-color);
+        }
+
+        body.standard-mode .payment-instructions,
+        body.light-mode-override .payment-instructions {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-instructions ol {
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .payment-instructions li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .payment-details {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px dashed var(--primary-color);
+        }
+
+        .payment-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .payment-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .detail-value {
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .copy-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .otp-input-container {
+            margin: 25px 0;
+        }
+
+        .otp-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 8px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .otp-timer {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .otp-timer.expiring {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .payment-status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .payment-status.pending {
+            background: rgba(243, 156, 18, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .payment-status.success {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .payment-status.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .resend-otp {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+
+        .resend-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==========================
+           13. Responsive Styles
            ========================== */
 
         @media (max-width: 1024px) {
-            .pill-nav {
-                width: 100%;
-                justify-content: space-between;
-                padding: 0 1rem;
+            .gooey-nav-container {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .auth-buttons {
+                display: none;
             }
 
             .hero h1 {
@@ -860,6 +1783,7 @@
             .courses,
             .video-section,
             .features,
+            .faq-section,
             footer {
                 padding: 40px 0;
             }
@@ -886,6 +1810,20 @@
 
             .footer-section {
                 margin: 15px 0;
+            }
+
+            .notification-container {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .vodafone-payment-steps {
+                gap: 10px;
+            }
+
+            .payment-step {
+                min-width: 100px;
             }
         }
 
@@ -914,111 +1852,552 @@
             .modal-content {
                 padding: 30px 20px;
             }
+
+            .payment-detail-item {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .copy-btn {
+                margin-right: 0;
+            }
         }
     </style>
 </head>
 
 <body id="body-content" lang="ar" dir="rtl">
 
+    <svg style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10"
+                    result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+
     <div id="glitch-background-container">
         <canvas id="glitch-canvas"></canvas>
         <div class="outer-vignette"></div>
     </div>
 
-    <!-- PillNav Navigation -->
-    <div class="pill-nav-container">
-        <nav class="pill-nav" aria-label="Primary"
-            style="--base: #000000; --pill-bg: #61dca3; --hover-text: #ffffff; --pill-text: #000000;">
-            <a class="pill-logo" href="#" aria-label="Home" id="pill-logo">
-                <span>LC</span>
-            </a>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
 
-            <div class="pill-nav-items desktop-only" id="pill-nav-items">
-                <ul class="pill-list" role="menubar">
-                    <li role="none">
-                        <a role="menuitem" href="#" class="pill is-active" aria-label="الرئيسية">
-                            <span class="hover-circle" aria-hidden="true"></span>
-                            <span class="label-stack">
-                                <span class="pill-label">الرئيسية</span>
-                                <span class="pill-label-hover" aria-hidden="true">الرئيسية</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li role="none">
-                        <a role="menuitem" href="#" class="pill" aria-label="الكورسات">
-                            <span class="hover-circle" aria-hidden="true"></span>
-                            <span class="label-stack">
-                                <span class="pill-label">الكورسات</span>
-                                <span class="pill-label-hover" aria-hidden="true">الكورسات</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li role="none">
-                        <a role="menuitem" href="#" class="pill" aria-label="المدونة">
-                            <span class="hover-circle" aria-hidden="true"></span>
-                            <span class="label-stack">
-                                <span class="pill-label">المدونة</span>
-                                <span class="pill-label-hover" aria-hidden="true">المدونة</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li role="none">
-                        <a role="menuitem" href="#" class="pill" aria-label="اتصل بنا">
-                            <span class="hover-circle" aria-hidden="true"></span>
-                            <span class="label-stack">
-                                <span class="pill-label">اتصل بنا</span>
-                                <span class="pill-label-hover" aria-hidden="true">اتصل بنا</span>
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+    <!-- Mobile Navigation -->
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-            <div class="auth-buttons desktop-only">
-                <button class="content-ar active-content" onclick="openLoginModal()">تسجيل الدخول</button>
-                <button class="content-ar active-content" onclick="openSignupModal()">إنشاء حساب</button>
-                <button id="language-switcher">English</button>
-            </div>
+    <div class="overlay" id="overlay"></div>
 
-            <button class="mobile-menu-button mobile-only" id="mobile-menu-button" aria-label="Toggle menu">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-        </nav>
-
-        <div class="mobile-menu-popover mobile-only" id="mobile-menu-popover"
-            style="--base: #000000; --pill-bg: #61dca3; --pill-text: #000000;">
-            <ul class="mobile-menu-list">
-                <li>
-                    <a href="#" class="mobile-menu-link is-active">الرئيسية</a>
-                </li>
-                <li>
-                    <a href="#" class="mobile-menu-link">الكورسات</a>
-                </li>
-                <li>
-                    <a href="#" class="mobile-menu-link">المدونة</a>
-                </li>
-                <li>
-                    <a href="#" class="mobile-menu-link">اتصل بنا</a>
-                </li>
-                <li>
-                    <a href="#" class="mobile-menu-link" onclick="openLoginModal()">تسجيل الدخول</a>
-                </li>
-                <li>
-                    <a href="#" class="mobile-menu-link" onclick="openSignupModal()">إنشاء حساب</a>
-                </li>
+    <div class="mobile-nav" id="mobile-nav">
+        <div class="mobile-nav-content">
+            <ul class="mobile-nav-links">
+                <li class="nav-item active"><a href="#" data-text="الرئيسية">الرئيسية</a></li>
+                <li class="nav-item"><a href="#" data-text="الكورسات">الكورسات</a></li>
+                <li class="nav-item"><a href="#" data-text="المدونة">المدونة</a></li>
+                <li class="nav-item"><a href="#" data-text="اتصل بنا">اتصل بنا</a></li>
             </ul>
+
+            <div class="mobile-auth-buttons">
+                <button onclick="openLoginModal()">تسجيل الدخول</button>
+                <button onclick="openSignupModal()">إنشاء حساب</button>
+            </div>
+
+            <div class="mobile-theme-switcher">
+                <button id="mobile-theme-switcher">Codey Mode</button>
+            </div>
+
+            <div class="mobile-dark-mode-toggle">
+                <label class="switch">
+                    <input id="mobile-dark-mode-input" type="checkbox" />
+                    <div class="slider round">
+                        <div class="sun-moon">
+                            <svg id="moon-dot-1" class="moon-dot" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="moon-dot-2" class="moon-dot" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="moon-dot-3" class="moon-dot" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="light-ray-1" class="light-ray" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="light-ray-2" class="light-ray" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="light-ray-3" class="light-ray" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+
+                            <svg id="cloud-1" class="cloud" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="cloud-2" class="cloud" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="cloud-3" class="cloud" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                        </div>
+                        <div class="stars">
+                            <svg id="star-1" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                            <svg id="star-2" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                            <svg id="star-3" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                            <svg id="star-4" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="mobile-language-switcher">
+                <button id="mobile-language-switcher">English</button>
+            </div>
         </div>
     </div>
 
-    <!-- باقي المحتوى -->
-    <div id="arabic-content" class="active-content content-ar">
+    <!-- Desktop Navigation -->
+    <nav class="main-nav-wrapper">
+        <div class="container nav-container">
+            <div class="logo">Lam3Code</div>
+
+            <div id="gooey-nav-wrapper" class="gooey-nav-container">
+                <nav>
+                    <ul class="nav-links">
+                        <li class="nav-item active"><a href="#" data-text="الرئيسية">الرئيسية</a></li>
+                        <li class="nav-item"><a href="#" data-text="الكورسات">الكورسات</a></li>
+                        <li class="nav-item"><a href="#" data-text="المدونة">المدونة</a></li>
+                        <li class="nav-item"><a href="#" data-text="اتصل بنا">اتصل بنا</a></li>
+                    </ul>
+                </nav>
+                <span class="effect filter" id="filter-effect"></span>
+                <span class="effect text active" id="text-effect" data-text="الرئيسية"></span>
+            </div>
+
+            <div class="auth-buttons">
+                <button onclick="openLoginModal()">تسجيل الدخول</button>
+                <button onclick="openSignupModal()">إنشاء حساب</button>
+                
+                <!-- Dark/Light Mode Switch - محسن -->
+                <label class="switch">
+                    <input id="dark-mode-input" type="checkbox" />
+                    <div class="slider round">
+                        <div class="sun-moon">
+                            <svg id="moon-dot-1" class="moon-dot" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="moon-dot-2" class="moon-dot" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="moon-dot-3" class="moon-dot" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="light-ray-1" class="light-ray" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="light-ray-2" class="light-ray" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="light-ray-3" class="light-ray" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+
+                            <svg id="cloud-1" class="cloud" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="cloud-2" class="cloud" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                            <svg id="cloud-3" class="cloud" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="50"></circle>
+                            </svg>
+                        </div>
+                        <div class="stars">
+                            <svg id="star-1" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                            <svg id="star-2" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                            <svg id="star-3" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                            <svg id="star-4" class="star-svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"
+                                ></path>
+                            </svg>
+                        </div>
+                    </div>
+                </label>
+                
+                <button id="theme-switcher">Codey Mode</button>
+                <button id="language-switcher">English</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Rating Modal -->
+    <div class="modal" id="ratingModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeRatingModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <h2 class="modal-title" id="ratingModalTitle">قيم هذا الكورس</h2>
+            <p class="modal-text">كيف تقيم تجربتك مع هذا الكورس؟</p>
+
+            <div class="rating-stars-modal">
+                <div class="stars-container">
+                    <span class="star-modal" data-rating="1">★</span>
+                    <span class="star-modal" data-rating="2">★</span>
+                    <span class="star-modal" data-rating="3">★</span>
+                    <span class="star-modal" data-rating="4">★</span>
+                    <span class="star-modal" data-rating="5">★</span>
+                </div>
+                <div class="rating-text-modal" id="ratingText">اختر تقييمك</div>
+            </div>
+
+            <button class="modal-button" onclick="submitRating()">
+                <i class="fas fa-check"></i> تأكيد التقييم
+            </button>
+            <button class="modal-button secondary" onclick="closeRatingModal()">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePaymentModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h2 class="modal-title">الدفع عبر فودافون كاش</h2>
+            <p class="modal-text">للاستفادة من الكورس، يرجى التحويل إلى الرقم التالي:</p>
+
+            <div class="payment-info">
+                <p>رقم فودافون كاش:</p>
+                <div class="payment-number">01091877231</div>
+                <p>المبلغ المطلوب:</p>
+                <div class="payment-amount" id="courseAmount">500 جنيه</div>
+            </div>
+
+            <p class="modal-text">بعد التحويل، سيصلك رسالة تأكيد خلال 24 ساعة</p>
+
+            <button class="modal-button" onclick="closePaymentModal()">
+                <i class="fas fa-check"></i> تم الدفع
+            </button>
+            <button class="modal-button secondary" onclick="closePaymentModal()">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+        </div>
+    </div>
+
+    <!-- Code Entry Modal -->
+    <div class="modal" id="codeModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCodeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-key"></i>
+            </div>
+            <h2 class="modal-title">أدخل كود الكورس</h2>
+            <p class="modal-text">إذا كان لديك كود خاص للكورس، أدخله هنا:</p>
+
+            <input type="text" class="code-input" id="courseCode" placeholder="أدخل الكود هنا..." maxlength="20">
+
+            <button class="modal-button" onclick="validateCode()">
+                <i class="fas fa-unlock"></i> تفعيل الكود
+            </button>
+            <button class="modal-button secondary" onclick="closeCodeModal()">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLoginModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <h2 class="modal-title">تسجيل الدخول</h2>
+
+            <div class="form-group">
+                <label class="form-label">اسم المستخدم أو البريد الإلكتروني</label>
+                <input type="text" class="form-input" id="loginUsername"
+                    placeholder="أدخل اسم المستخدم أو البريد الإلكتروني">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="أدخل كلمة المرور">
+            </div>
+
+            <button class="modal-button" onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+            </button>
+            <button class="modal-button secondary" onclick="closeLoginModal()">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+
+            <p class="modal-text" style="margin-top: 20px;">
+                ليس لديك حساب؟ <a href="#" onclick="closeLoginModal(); openSignupModal();"
+                    style="color: var(--secondary-color);">إنشاء حساب جديد</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignupModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="modal-title">إنشاء حساب جديد</h2>
+
+            <div class="form-group">
+                <label class="form-label">الاسم الكامل</label>
+                <input type="text" class="form-input" id="signupFullName" placeholder="أدخل اسمك الكامل">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input type="email" class="form-input" id="signupEmail" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">اسم المستخدم</label>
+                <input type="text" class="form-input" id="signupUsername" placeholder="اختر اسم مستخدم">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" class="form-input" id="signupPassword" placeholder="اختر كلمة مرور قوية">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">تأكيد كلمة المرور</label>
+                <input type="password" class="form-input" id="signupConfirmPassword"
+                    placeholder="أعد إدخال كلمة المرور">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">رقم الهاتف</label>
+                <input type="tel" class="form-input" id="signupPhone" placeholder="أدخل رقم هاتفك">
+            </div>
+
+            <button class="modal-button" onclick="handleSignup()">
+                <i class="fas fa-user-plus"></i> إنشاء الحساب
+            </button>
+            <button class="modal-button secondary" onclick="closeSignupModal()">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+
+            <p class="modal-text" style="margin-top: 20px;">
+                لديك حساب بالفعل؟ <a href="#" onclick="closeSignupModal(); openLoginModal();"
+                    style="color: var(--secondary-color);">تسجيل الدخول</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Vodafone Cash Payment Modal -->
+    <div class="modal" id="vodafonePaymentModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeVodafonePaymentModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h2 class="modal-title">الدفع عبر فودافون كاش</h2>
+            
+            <div class="vodafone-payment-steps">
+                <div class="payment-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">تحويل المبلغ</div>
+                </div>
+                <div class="payment-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">إدخال الكود</div>
+                </div>
+                <div class="payment-step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">تفعيل الكورس</div>
+                </div>
+            </div>
+
+            <div class="payment-instructions">
+                <h4>خطوات الدفع:</h4>
+                <ol>
+                    <li>افتح تطبيق فودافون كاش على هاتفك</li>
+                    <li>اختر "إرسال أموال"</li>
+                    <li>أدخل الرقم الموجود أدناه</li>
+                    <li>أدخل المبلغ المطلوب</li>
+                    <li>في خانة الرسالة، اكتب كود الطلب</li>
+                    <li>أكد العملية</li>
+                </ol>
+            </div>
+
+            <div class="payment-details">
+                <div class="payment-detail-item">
+                    <span class="detail-label">رقم فودافون كاش:</span>
+                    <span class="detail-value">01091877231</span>
+                    <button class="copy-btn" onclick="copyToClipboard('01091877231')">
+                        <i class="fas fa-copy"></i> نسخ
+                    </button>
+                </div>
+                <div class="payment-detail-item">
+                    <span class="detail-label">كود الطلب:</span>
+                    <span class="detail-value" id="orderCode">ORD_1234</span>
+                    <button class="copy-btn" onclick="copyToClipboard('ORD_1234')">
+                        <i class="fas fa-copy"></i> نسخ
+                    </button>
+                </div>
+                <div class="payment-detail-item">
+                    <span class="detail-label">المبلغ:</span>
+                    <span class="detail-value" id="paymentAmount">500 جنيه</span>
+                </div>
+            </div>
+
+            <div class="payment-status pending" id="paymentStatus">
+                <i class="fas fa-clock"></i> في انتظار التحويل...
+            </div>
+
+            <button class="modal-button" onclick="checkPaymentStatus()" id="checkPaymentBtn">
+                <i class="fas fa-sync-alt"></i> التحقق من حالة الدفع
+            </button>
+            
+            <button class="modal-button secondary" onclick="closeVodafonePaymentModal()">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div class="modal" id="otpModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeOTPModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2 class="modal-title">تفعيل الكورس</h2>
+            <p class="modal-text">تم إرسال كود التفعيل إلى هاتفك. أدخل الكود المكون من 6 أرقام:</p>
+
+            <div class="otp-input-container">
+                <input type="text" class="otp-input" id="otpInput" placeholder="ـــ ـــ ـــ" maxlength="6" 
+                       oninput="formatOTPInput(this)" onkeypress="return isNumberKey(event)">
+                <div class="otp-timer" id="otpTimer">
+                    الكود صالح لمدة: <span id="timer">10:00</span>
+                </div>
+            </div>
+
+            <div class="payment-status" id="otpStatus" style="display: none;"></div>
+
+            <button class="modal-button" onclick="verifyOTP()" id="verifyOTPBtn">
+                <i class="fas fa-check"></i> تفعيل الكورس
+            </button>
+            
+            <div class="resend-otp">
+                <button class="resend-btn" onclick="resendOTP()" id="resendOTPBtn">
+                    <i class="fas fa-redo"></i> إعادة إرسال الكود
+                </button>
+            </div>
+
+            <button class="modal-button secondary" onclick="closeOTPModal()">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+        </div>
+    </div>
+
+    <!-- Course Access Modal -->
+    <div class="modal" id="courseAccessModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCourseAccessModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon" style="color: var(--success-color);">
+                <i class="fas fa-unlock-alt"></i>
+            </div>
+            <h2 class="modal-title">تم التفعيل بنجاح! 🎉</h2>
+            <p class="modal-text" id="courseAccessText">يمكنك الآن الوصول إلى محتوى الكورس بالكامل</p>
+
+            <div class="payment-details" style="background: rgba(46, 204, 113, 0.1); border-color: var(--success-color);">
+                <div class="payment-detail-item">
+                    <span class="detail-label">الكورس:</span>
+                    <span class="detail-value" id="activatedCourseName">HTML & CSS</span>
+                </div>
+                <div class="payment-detail-item">
+                    <span class="detail-label">مدة الوصول:</span>
+                    <span class="detail-value">مدى الحياة</span>
+                </div>
+                <div class="payment-detail-item">
+                    <span class="detail-label">تاريخ التفعيل:</span>
+                    <span class="detail-value" id="activationDate">--/--/----</span>
+                </div>
+            </div>
+
+            <button class="modal-button" onclick="accessCourseContent()">
+                <i class="fas fa-play-circle"></i> بدء التعلم الآن
+            </button>
+            
+            <button class="modal-button secondary" onclick="closeCourseAccessModal()">
+                <i class="fas fa-home"></i> العودة للرئيسية
+            </button>
+        </div>
+    </div>
+
+    <div id="arabic-content" class="active-content">
         <section class="hero">
             <div class="container">
                 <h1>ابدأ رحلتك في عالم البرمجة</h1>
                 <p>تعلم البرمجة من الصفر إلى الاحتراف مع أفضل المدربين ومن خلال مسارات تعليمية شاملة تناسب جميع
                     المستويات</p>
-                <button class="cta-button" onclick="alert('ابدأ التعلم')">ابدأ التعلم الآن</button>
+                <button class="cta-button" onclick="showNotification('success', 'مرحباً بك في منصة Lam3Code!')">ابدأ
+                    التعلم الآن</button>
             </div>
         </section>
 
@@ -1026,10 +2405,8 @@
             <div class="container">
                 <h2 class="section-title">الكورسات المتاحة</h2>
                 <div class="courses-container">
-                    <!-- LogoLoop Animation for Courses -->
-                    <div class="courseloop courseloop--fade courseloop--scale-hover" id="coursesLoop"
-                        style="--courseloop-cardWidth: 300px; --courseloop-gap: 30px; --courseloop-fadeColor: #000000;">
-                        <div class="courseloop__track" id="coursesTrack">
+                    <div class="cards-loop-container" id="cardsContainer">
+                        <div class="cards-track" id="cardsTrack">
                             <!-- سيتم إضافة الكروت ديناميكياً -->
                         </div>
                     </div>
@@ -1041,7 +2418,8 @@
             <div class="container">
                 <h2 class="section-title">كيفية التسجيل في المنصة</h2>
                 <div class="video-container">
-                    <div class="video-placeholder" onclick="alert('سيتم تشغيل الفيديو التوضيحي')">
+                    <div class="video-placeholder"
+                        onclick="showNotification('info', 'سيتم تشغيل الفيديو التوضيحي قريباً')">
                         <i class="fas fa-play-circle play-button"></i>
                     </div>
                 </div>
@@ -1071,11 +2449,56 @@
                 </div>
             </div>
         </section>
+
+        <section class="faq-section">
+            <div class="container">
+                <h2 class="section-title">الأسئلة الشائعة</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>كيف أبدأ في تعلم البرمجة؟</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>ننصح بالبدء مع كورس HTML & CSS ثم الانتقال إلى JavaScript، حيث أن هذه اللغات تشكل الأساس
+                                لأي مبرمج ويب.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>هل أحتاج لخلفية في البرمجة؟</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>لا، جميع الكورسات تبدأ من الصفر ولا تحتاج لأي خلفية مسبقة في البرمجة.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>كم مدة الكورسات؟</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>مدة الكورسات تتراوح بين 4 إلى 8 أسابيع حسب مستوى الكورس ومدى التزامك بالدراسة.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>هل أحصل على شهادة بعد الانتهاء؟</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>نعم، تحصل على شهادة معتمدة من المنصة بعد إتمام كل كورس بنجاح.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <footer>
         <div class="container">
-            <div id="footer-ar" class="footer-content content-ar active-content">
+            <div class="footer-content">
                 <div class="footer-section">
                     <h3>اتصل بنا</h3>
                     <p><i class="fas fa-map-marker-alt"></i> العنوان: القاهرة، مصر</p>
@@ -1102,96 +2525,1356 @@
             </div>
 
             <div class="footer-bottom">
-                <p class="content-ar active-content">جميع الحقوق محفوظة &copy; 2023 Lam3Code</p>
+                <p>جميع الحقوق محفوظة &copy; 2023 Lam3Code</p>
             </div>
         </div>
     </footer>
 
-    <!-- النوافذ المنبثقة -->
-    <div class="modal" id="paymentModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closePaymentModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 class="modal-title">الدفع عبر فودافون كاش</h2>
-            <div class="payment-info">
-                <p>رقم فودافون كاش:</p>
-                <div class="payment-number">01091877231</div>
-                <p>المبلغ المطلوب:</p>
-                <div class="payment-amount" id="courseAmount">500 جنيه</div>
-            </div>
-            <button class="modal-button" onclick="closePaymentModal()">تم الدفع</button>
-            <button class="modal-button secondary" onclick="closePaymentModal()">إلغاء</button>
-        </div>
-    </div>
-
-    <div class="modal" id="codeModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeCodeModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 class="modal-title">أدخل كود الكورس</h2>
-            <input type="text" class="form-input" id="courseCode" placeholder="أدخل الكود هنا">
-            <button class="modal-button" onclick="validateCode()">تفعيل الكود</button>
-            <button class="modal-button secondary" onclick="closeCodeModal()">إلغاء</button>
-        </div>
-    </div>
-
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeLoginModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 class="modal-title">تسجيل الدخول</h2>
-            <div class="form-group">
-                <label class="form-label">اسم المستخدم أو البريد الإلكتروني</label>
-                <input type="text" class="form-input" id="loginUsername">
-            </div>
-            <div class="form-group">
-                <label class="form-label">كلمة المرور</label>
-                <input type="password" class="form-input" id="loginPassword">
-            </div>
-            <button class="modal-button" onclick="handleLogin()">تسجيل الدخول</button>
-            <button class="modal-button secondary" onclick="closeLoginModal()">إلغاء</button>
-        </div>
-    </div>
-
-    <div class="modal" id="signupModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeSignupModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 class="modal-title">إنشاء حساب جديد</h2>
-            <div class="form-group">
-                <label class="form-label">الاسم الكامل</label>
-                <input type="text" class="form-input" id="signupFullName">
-            </div>
-            <div class="form-group">
-                <label class="form-label">البريد الإلكتروني</label>
-                <input type="email" class="form-input" id="signupEmail">
-            </div>
-            <div class="form-group">
-                <label class="form-label">اسم المستخدم</label>
-                <input type="text" class="form-input" id="signupUsername">
-            </div>
-            <div class="form-group">
-                <label class="form-label">كلمة المرور</label>
-                <input type="password" class="form-input" id="signupPassword">
-            </div>
-            <div class="form-group">
-                <label class="form-label">تأكيد كلمة المرور</label>
-                <input type="password" class="form-input" id="signupConfirmPassword">
-            </div>
-            <div class="form-group">
-                <label class="form-label">رقم الهاتف</label>
-                <input type="tel" class="form-input" id="signupPhone">
-            </div>
-            <button class="modal-button" onclick="handleSignup()">إنشاء الحساب</button>
-            <button class="modal-button secondary" onclick="closeSignupModal()">إلغاء</button>
-        </div>
-    </div>
-
     <script>
+        // =======================================================
+        // Dark/Light Mode Management System - الإصدار المصحح
+        // =======================================================
+        let isDarkMode = true;
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            
+            // تحديث حالة الـ checkboxes
+            const darkModeInput = document.getElementById('dark-mode-input');
+            const mobileDarkModeInput = document.getElementById('mobile-dark-mode-input');
+            
+            if (darkModeInput) darkModeInput.checked = isDarkMode;
+            if (mobileDarkModeInput) mobileDarkModeInput.checked = isDarkMode;
+            
+            // إزالة الكلاسات الحالية
+            document.body.classList.remove('light-mode-override', 'dark-mode-override');
+            
+            // تطبيق الوضع الجديد
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode-override');
+            } else {
+                document.body.classList.add('light-mode-override');
+            }
+            
+            // حفظ التفضيل
+            localStorage.setItem('darkModePreference', isDarkMode);
+            
+            // إشعار
+            showNotification('info', 
+                currentLanguage === 'ar' ? 
+                (isDarkMode ? 'تم التبديل إلى الوضع الداكن' : 'تم التبديل إلى الوضع الفاتح') :
+                (isDarkMode ? 'Switched to Dark Mode' : 'Switched to Light Mode')
+            );
+        }
+
+        function loadDarkModePreference() {
+            const savedDarkMode = localStorage.getItem('darkModePreference');
+            if (savedDarkMode !== null) {
+                isDarkMode = savedDarkMode === 'true';
+            }
+            
+            // تحديث الـ checkboxes
+            const darkModeInput = document.getElementById('dark-mode-input');
+            const mobileDarkModeInput = document.getElementById('mobile-dark-mode-input');
+            
+            if (darkModeInput) darkModeInput.checked = isDarkMode;
+            if (mobileDarkModeInput) mobileDarkModeInput.checked = isDarkMode;
+            
+            // تطبيق الوضع المحفوظ
+            document.body.classList.remove('light-mode-override', 'dark-mode-override');
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode-override');
+            } else {
+                document.body.classList.add('light-mode-override');
+            }
+        }
+
+        // =======================================================
+        // Theme Management System - الإصدار المصحح
+        // =======================================================
+        const themes = {
+            'codey-mode': {
+                name: { ar: 'Codey Mode', en: 'Codey Mode' },
+                next: 'standard-mode'
+            },
+            'standard-mode': {
+                name: { ar: 'Standard Mode', en: 'Standard Mode' },
+                next: 'codey-mode'
+            }
+        };
+
+        let currentTheme = 'codey-mode';
+
+        function switchTheme() {
+            // إزالة الثيم الحالي
+            document.body.classList.remove(currentTheme);
+            
+            // الحصول على الثيم التالي
+            currentTheme = themes[currentTheme].next;
+            
+            // تطبيق الثيم الجديد
+            document.body.classList.add(currentTheme);
+            
+            // تحديث نص الأزرار
+            updateThemeSwitcherText();
+            
+            // حفظ التفضيل
+            localStorage.setItem('preferredTheme', currentTheme);
+            
+            // إشعار
+            showNotification('info', 
+                currentLanguage === 'ar' ? 
+                `تم التبديل إلى ${themes[currentTheme].name.ar}` :
+                `Switched to ${themes[currentTheme].name.en}`
+            );
+        }
+
+        function updateThemeSwitcherText() {
+            const themeName = currentLanguage === 'ar' ? 
+                themes[currentTheme].name.ar : themes[currentTheme].name.en;
+            
+            const themeSwitcher = document.getElementById('theme-switcher');
+            const mobileThemeSwitcher = document.getElementById('mobile-theme-switcher');
+            
+            if (themeSwitcher) themeSwitcher.textContent = themeName;
+            if (mobileThemeSwitcher) mobileThemeSwitcher.textContent = themeName;
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('preferredTheme') || 'codey-mode';
+            currentTheme = savedTheme;
+            document.body.classList.add(currentTheme);
+            updateThemeSwitcherText();
+        }
+
+        // =======================================================
+        // Translation System
+        // =======================================================
+        const translations = {
+            ar: {
+                // Navigation
+                home: "الرئيسية",
+                courses: "الكورسات",
+                blog: "المدونة",
+                contact: "اتصل بنا",
+                login: "تسجيل الدخول",
+                signup: "إنشاء حساب",
+                language: "English",
+                theme: "Codey Mode",
+
+                // Hero Section
+                heroTitle: "ابدأ رحلتك في عالم البرمجة",
+                heroDesc: "تعلم البرمجة من الصفر إلى الاحتراف مع أفضل المدربين ومن خلال مسارات تعليمية شاملة تناسب جميع المستويات",
+                ctaButton: "ابدأ التعلم الآن",
+
+                // Courses Section
+                coursesTitle: "الكورسات المتاحة",
+
+                // Video Section
+                videoTitle: "كيفية التسجيل في المنصة",
+                videoDesc: "شاهد هذا الفيديو لتعرف كيفية التسجيل في المنصة والبدء في رحلتك التعليمية",
+
+                // Features Section
+                featuresTitle: "لماذا تختار منصتنا؟",
+                feature1Title: "مدربون محترفون",
+                feature1Desc: "تعلم من أفضل المدربين ذوي الخبرة الواسعة في مجال البرمجة.",
+                feature2Title: "مشاريع عملية",
+                feature2Desc: "طبق ما تتعلمه من خلال مشاريع عملية حقيقية تبني بها ملفك الشخصي.",
+                feature3Title: "دعم فني متواصل",
+                feature3Desc: "فريق الدعم الفني متاح على مدار الساعة لمساعدتك.",
+
+                // FAQ Section
+                faqTitle: "الأسئلة الشائعة",
+                faq1Question: "كيف أبدأ في تعلم البرمجة؟",
+                faq1Answer: "ننصح بالبدء مع كورس HTML & CSS ثم الانتقال إلى JavaScript، حيث أن هذه اللغات تشكل الأساس لأي مبرمج ويب.",
+                faq2Question: "هل أحتاج لخلفية في البرمجة؟",
+                faq2Answer: "لا، جميع الكورسات تبدأ من الصفر ولا تحتاج لأي خلفية مسبقة في البرمجة.",
+                faq3Question: "كم مدة الكورسات?",
+                faq3Answer: "مدة الكورسات تتراوح بين 4 إلى 8 أسابيع حسب مستوى الكورس ومدى التزامك بالدراسة.",
+                faq4Question: "هل أحصل على شهادة بعد الانتهاء؟",
+                faq4Answer: "نعم، تحصل على شهادة معتمدة من المنصة بعد إتمام كل كورس بنجاح.",
+
+                // Footer
+                contactUs: "اتصل بنا",
+                address: "العنوان: القاهرة، مصر",
+                email: "البريد الإلكتروني: info@lam3code.com",
+                quickLinks: "روابط سريعة",
+                support: "الدعم الفني",
+                supportDesc: "نحن هنا لمساعدتك على مدار الساعة",
+                followUs: "تابعنا على",
+                rights: "جميع الحقوق محفوظة © 2023 Lam3Code",
+
+                // Course Cards
+                enrollCourse: "اشترك في الكورس",
+                enterCode: "أدخل كود الكورس",
+                rateCourse: "قيم الكورس",
+                yourRating: "تقييمك",
+                chooseRating: "اختر تقييمك",
+                ratingTexts: ["سيء", "مقبول", "جيد", "جيد جداً", "ممتاز"]
+            },
+            en: {
+                // Navigation
+                home: "Home",
+                courses: "Courses",
+                blog: "Blog",
+                contact: "Contact Us",
+                login: "Login",
+                signup: "Sign Up",
+                language: "العربية",
+                theme: "Codey Mode",
+
+                // Hero Section
+                heroTitle: "Start Your Programming Journey",
+                heroDesc: "Learn programming from scratch to professional level with the best instructors and comprehensive educational paths suitable for all levels",
+                ctaButton: "Start Learning Now",
+
+                // Courses Section
+                coursesTitle: "Available Courses",
+
+                // Video Section
+                videoTitle: "How to Register on the Platform",
+                videoDesc: "Watch this video to learn how to register on the platform and start your educational journey",
+
+                // Features Section
+                featuresTitle: "Why Choose Our Platform?",
+                feature1Title: "Professional Instructors",
+                feature1Desc: "Learn from the best instructors with extensive experience in the field of programming.",
+                feature2Title: "Practical Projects",
+                feature2Desc: "Apply what you learn through real practical projects to build your portfolio.",
+                feature3Title: "24/7 Technical Support",
+                feature3Desc: "Our technical support team is available around the clock to assist you.",
+
+                // FAQ Section
+                faqTitle: "Frequently Asked Questions",
+                faq1Question: "How do I start learning programming?",
+                faq1Answer: "We recommend starting with the HTML & CSS course then moving to JavaScript, as these languages form the foundation for any web programmer.",
+                faq2Question: "Do I need a background in programming?",
+                faq2Answer: "No, all courses start from scratch and you don't need any prior programming background.",
+                faq3Question: "How long are the courses?",
+                faq3Answer: "Course duration ranges from 4 to 8 weeks depending on the course level and your study commitment.",
+                faq4Question: "Do I get a certificate after completion?",
+                faq4Answer: "Yes, you get a certified certificate from the platform after successfully completing each course.",
+
+                // Footer
+                contactUs: "Contact Us",
+                address: "Address: Cairo, Egypt",
+                email: "Email: info@lam3code.com",
+                quickLinks: "Quick Links",
+                support: "Technical Support",
+                supportDesc: "We are here to help you 24/7",
+                followUs: "Follow Us",
+                rights: "All Rights Reserved © 2023 Lam3Code",
+
+                // Course Cards
+                enrollCourse: "Enroll in Course",
+                enterCode: "Enter Course Code",
+                rateCourse: "Rate Course",
+                yourRating: "Your Rating",
+                chooseRating: "Choose your rating",
+                ratingTexts: ["Poor", "Fair", "Good", "Very Good", "Excellent"]
+            }
+        };
+
+        // =======================================================
+        // Courses Data
+        // =======================================================
+        const coursesData = {
+            ar: [
+                { 
+                    name: 'HTML & CSS', 
+                    title: 'تطوير واجهات الويب الأساسية', 
+                    desc: 'تعلم أساسيات تطوير واجهات الويب باستخدام HTML و CSS.', 
+                    price: 300,
+                    icon: 'fab fa-html5',
+                    color: '#e34f26'
+                },
+                { 
+                    name: 'JavaScript', 
+                    title: 'برمجة JavaScript التفاعلية', 
+                    desc: 'أتقن لغة JavaScript لإضافة التفاعل إلى مواقع الويب.', 
+                    price: 400,
+                    icon: 'fab fa-js',
+                    color: '#f7df1e'
+                },
+                { 
+                    name: 'React JS', 
+                    title: 'بناء تطبيقات React المتقدمة', 
+                    desc: 'تعلم React لبناء واجهات مستخدم قوية وفعالة.', 
+                    price: 500,
+                    icon: 'fab fa-react',
+                    color: '#61dafb'
+                },
+                { 
+                    name: 'Tailwind CSS', 
+                    title: 'تصميم سريع باستخدام Tailwind', 
+                    desc: 'استخدم إطار عمل Tailwind CSS لتنسيق مواقع الويب.', 
+                    price: 350,
+                    icon: 'fas fa-wind',
+                    color: '#38bdf8'
+                },
+                { 
+                    name: 'Bootstrap', 
+                    title: 'التصميم المتجاوب مع Bootstrap', 
+                    desc: 'تعلم استخدام Bootstrap لإنشاء تصاميم ويب متجاوبة وجذابة.', 
+                    price: 300,
+                    icon: 'fab fa-bootstrap',
+                    color: '#7952b3'
+                }
+            ],
+            en: [
+                { 
+                    name: 'HTML & CSS', 
+                    title: 'Web Development Fundamentals', 
+                    desc: 'Learn the basics of web development using HTML and CSS.', 
+                    price: 300,
+                    icon: 'fab fa-html5',
+                    color: '#e34f26'
+                },
+                { 
+                    name: 'JavaScript', 
+                    title: 'Interactive JavaScript Programming', 
+                    desc: 'Master JavaScript language to add interactivity to websites.', 
+                    price: 400,
+                    icon: 'fab fa-js',
+                    color: '#f7df1e'
+                },
+                { 
+                    name: 'React JS', 
+                    title: 'Advanced React Applications', 
+                    desc: 'Learn React to build powerful and efficient user interfaces.', 
+                    price: 500,
+                    icon: 'fab fa-react',
+                    color: '#61dafb'
+                },
+                { 
+                    name: 'Tailwind CSS', 
+                    title: 'Rapid Design with Tailwind', 
+                    desc: 'Use Tailwind CSS framework to style websites.', 
+                    price: 350,
+                    icon: 'fas fa-wind',
+                    color: '#38bdf8'
+                },
+                { 
+                    name: 'Bootstrap', 
+                    title: 'Responsive Design with Bootstrap', 
+                    desc: 'Learn to use Bootstrap for creating responsive and attractive web designs.', 
+                    price: 300,
+                    icon: 'fab fa-bootstrap',
+                    color: '#7952b3'
+                }
+            ]
+        };
+
+        // =======================================================
+        // User Ratings System
+        // =======================================================
+        let userRatings = JSON.parse(localStorage.getItem('userRatings')) || {};
+        let currentRatingCourse = '';
+        let currentUserRating = 0;
+        let animationId = null;
+        let isAutoScrolling = true;
+        let isUserInteracting = false;
+
+        // =======================================================
+        // Vodafone Cash Payment System
+        // =======================================================
+        let currentPaymentCourse = '';
+        let currentPaymentAmount = 0;
+        let paymentCheckInterval = null;
+        let otpTimerInterval = null;
+        let otpTimeLeft = 600; // 10 minutes in seconds
+
+        // =======================================================
+        // Language Management
+        // =======================================================
+        let currentLanguage = 'ar';
+
+        function switchLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('preferredLanguage', currentLanguage);
+            updatePageLanguage(currentLanguage);
+        }
+
+        function updatePageLanguage(lang) {
+            currentLanguage = lang;
+
+            // Update HTML attributes
+            document.documentElement.setAttribute('lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+
+            // Update all text content
+            updateTextContent(lang);
+
+            // Update courses
+            updateCoursesWithPayment(lang);
+
+            // Update language switcher buttons
+            document.getElementById('language-switcher').textContent = translations[lang].language;
+            document.getElementById('mobile-language-switcher').textContent = translations[lang].language;
+        }
+
+        function updateTextContent(lang) {
+            const t = translations[lang];
+
+            // Navigation
+            document.querySelectorAll('.nav-links a, .mobile-nav-links a').forEach((link, index) => {
+                const texts = [t.home, t.courses, t.blog, t.contact];
+                link.textContent = texts[index];
+                if (link.hasAttribute('data-text')) {
+                    link.setAttribute('data-text', texts[index]);
+                }
+            });
+
+            // Auth buttons
+            document.querySelectorAll('.auth-buttons button, .mobile-auth-buttons button').forEach((btn, index) => {
+                btn.textContent = index === 0 ? t.login : t.signup;
+            });
+
+            // Hero section
+            document.querySelector('.hero h1').textContent = t.heroTitle;
+            document.querySelector('.hero p').textContent = t.heroDesc;
+            document.querySelector('.cta-button').textContent = t.ctaButton;
+
+            // Section titles
+            document.querySelector('.courses .section-title').textContent = t.coursesTitle;
+            document.querySelector('.video-section .section-title').textContent = t.videoTitle;
+            document.querySelector('.features .section-title').textContent = t.featuresTitle;
+            document.querySelector('.video-section p').textContent = t.videoDesc;
+            document.querySelector('.faq-section .section-title').textContent = t.faqTitle;
+
+            // Features
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards[0].querySelector('h3').textContent = t.feature1Title;
+            featureCards[0].querySelector('p').textContent = t.feature1Desc;
+            featureCards[1].querySelector('h3').textContent = t.feature2Title;
+            featureCards[1].querySelector('p').textContent = t.feature2Desc;
+            featureCards[2].querySelector('h3').textContent = t.feature3Title;
+            featureCards[2].querySelector('p').textContent = t.feature3Desc;
+
+            // FAQ
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems[0].querySelector('.faq-question h3').textContent = t.faq1Question;
+            faqItems[0].querySelector('.faq-answer p').textContent = t.faq1Answer;
+            faqItems[1].querySelector('.faq-question h3').textContent = t.faq2Question;
+            faqItems[1].querySelector('.faq-answer p').textContent = t.faq2Answer;
+            faqItems[2].querySelector('.faq-question h3').textContent = t.faq3Question;
+            faqItems[2].querySelector('.faq-answer p').textContent = t.faq3Answer;
+            faqItems[3].querySelector('.faq-question h3').textContent = t.faq4Question;
+            faqItems[3].querySelector('.faq-answer p').textContent = t.faq4Answer;
+
+            // Footer
+            document.querySelectorAll('.footer-section h3')[0].textContent = t.contactUs;
+            document.querySelectorAll('.footer-section p')[0].innerHTML = `<i class="fas fa-map-marker-alt"></i> ${t.address}`;
+            document.querySelectorAll('.footer-section p')[1].innerHTML = `<i class="fas fa-envelope"></i> ${t.email}`;
+            document.querySelectorAll('.footer-section h3')[1].textContent = t.quickLinks;
+            document.querySelectorAll('.footer-section h3')[2].textContent = t.support;
+            document.querySelectorAll('.footer-section p')[2].textContent = t.supportDesc;
+            document.querySelectorAll('.footer-section h3')[3].textContent = t.followUs;
+            document.querySelector('.footer-bottom p').textContent = t.rights;
+        }
+
+        function updateCoursesWithPayment(lang) {
+            const courses = coursesData[lang];
+            const track = document.getElementById('cardsTrack');
+
+            track.innerHTML = '';
+
+            for (let set = 0; set < 3; set++) {
+                courses.forEach((course, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    const userRating = userRatings[course.name] || 0;
+                    const stars = generateStars(userRating, course.name);
+                    
+                    // التحقق إذا كان الكورس مفعل
+                    const activatedCourses = JSON.parse(localStorage.getItem('activatedCourses')) || [];
+                    const isActivated = activatedCourses.includes(course.name);
+
+                    card.innerHTML = `
+                        <div class="card-img">
+                            <i class="${course.icon}" style="color: ${course.color}; font-size: 40px;"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>${course.title}</h3>
+                            <p>${course.desc}</p>
+                            <div class="card-rating">
+                                <div class="rating-stars" id="stars-${course.name}">
+                                    ${stars}
+                                </div>
+                                <span class="rating-text">
+                                    ${userRating > 0 ?
+                                        `${translations[lang].yourRating}: ${userRating}/5` :
+                                        translations[lang].rateCourse}
+                                </span>
+                            </div>
+                            <div class="card-buttons">
+                                ${isActivated ? 
+                                    `<button class="card-button" style="background: linear-gradient(135deg, var(--success-color), #27ae60);" onclick="accessCourse('${course.name}')">
+                                        <i class="fas fa-play-circle"></i> ${currentLanguage === 'ar' ? 'ابدأ التعلم' : 'Start Learning'}
+                                    </button>` :
+                                    `<button class="card-button" onclick="openVodafonePayment('${course.name}', ${course.price})">
+                                        <i class="fas fa-shopping-cart"></i> ${translations[lang].enrollCourse} - ${course.price} ${lang === 'ar' ? 'جنيه' : 'EGP'}
+                                    </button>`
+                                }
+                                <button class="card-button secondary" onclick="openRatingModal('${course.name}')">
+                                    <i class="fas fa-star"></i> ${translations[lang].rateCourse}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    track.appendChild(card);
+                });
+            }
+
+            setupStarRating();
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            setupScroll();
+        }
+
+        function generateStars(rating, courseName) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                stars += `<span class="star ${i <= rating ? 'active' : ''}" data-rating="${i}" data-course="${courseName}">★</span>`;
+            }
+            return stars;
+        }
+
+        function setupStarRating() {
+            document.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('click', function () {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    const courseName = this.getAttribute('data-course');
+                    rateCourse(courseName, rating);
+                });
+            });
+        }
+
+        function rateCourse(courseName, rating) {
+            userRatings[courseName] = rating;
+            localStorage.setItem('userRatings', JSON.stringify(userRatings));
+
+            // Update the stars visually
+            const starsContainer = document.getElementById(`stars-${courseName}`);
+            if (starsContainer) {
+                starsContainer.innerHTML = generateStars(rating, courseName);
+                setupStarRating();
+            }
+
+            // Update rating text
+            const ratingText = starsContainer?.parentElement?.querySelector('.rating-text');
+            if (ratingText) {
+                ratingText.textContent = `${translations[currentLanguage].yourRating}: ${rating}/5`;
+            }
+
+            showNotification('success',
+                currentLanguage === 'ar' ?
+                    `شكراً لك! قمت بتقييم ${courseName} بـ ${rating} نجوم` :
+                    `Thank you! You rated ${courseName} with ${rating} stars`
+            );
+        }
+
+        // =======================================================
+        // Vodafone Cash Payment Functions
+        // =======================================================
+        function openVodafonePayment(courseName, price) {
+            currentPaymentCourse = courseName;
+            currentPaymentAmount = price;
+            
+            // توليد كود طلب فريد
+            const orderCode = 'ORD_' + Math.random().toString(36).substr(2, 8).toUpperCase();
+            document.getElementById('orderCode').textContent = orderCode;
+            document.getElementById('paymentAmount').textContent = price + (currentLanguage === 'ar' ? ' جنيه' : ' EGP');
+            
+            // إعادة تعيين حالة الدفع
+            document.getElementById('paymentStatus').className = 'payment-status pending';
+            document.getElementById('paymentStatus').innerHTML = '<i class="fas fa-clock"></i> في انتظار التحويل...';
+            document.getElementById('checkPaymentBtn').style.display = 'block';
+            document.getElementById('checkPaymentBtn').disabled = false;
+            document.getElementById('checkPaymentBtn').innerHTML = '<i class="fas fa-sync-alt"></i> التحقق من حالة الدفع';
+            
+            document.getElementById('vodafonePaymentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVodafonePaymentModal() {
+            document.getElementById('vodafonePaymentModal').classList.remove('active');
+            document.body.style.overflow = '';
+            stopPaymentChecking();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('success', currentLanguage === 'ar' ? 'تم نسخ النص' : 'Text copied');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('success', currentLanguage === 'ar' ? 'تم نسخ النص' : 'Text copied');
+            });
+        }
+
+        function checkPaymentStatus() {
+            const checkBtn = document.getElementById('checkPaymentBtn');
+            const statusDiv = document.getElementById('paymentStatus');
+            
+            checkBtn.innerHTML = '<span class="loading-spinner"></span> جاري التحقق...';
+            checkBtn.disabled = true;
+            
+            // محاكاة التحقق من الدفع (في الواقع سيكون اتصال بالخادم)
+            setTimeout(() => {
+                // في التطبيق الحقيقي، هذا سيتحقق من API فودافون كاش
+                const isPaymentConfirmed = Math.random() > 0.3; // 70% success rate for demo
+                
+                if (isPaymentConfirmed) {
+                    statusDiv.className = 'payment-status success';
+                    statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> تم تأكيد الدفع بنجاح!';
+                    checkBtn.style.display = 'none';
+                    
+                    // إرسال OTP تلقائياً
+                    setTimeout(() => {
+                        closeVodafonePaymentModal();
+                        sendOTP();
+                    }, 1500);
+                } else {
+                    statusDiv.className = 'payment-status error';
+                    statusDiv.innerHTML = '<i class="fas fa-times-circle"></i> لم يتم العثور على التحويل بعد';
+                    checkBtn.innerHTML = '<i class="fas fa-sync-alt"></i> المحاولة مرة أخرى';
+                    checkBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        function startPaymentChecking() {
+            paymentCheckInterval = setInterval(() => {
+                // في التطبيق الحقيقي، هذا سيتحقق من API كل 10 ثواني
+                console.log('Checking payment status...');
+            }, 10000);
+        }
+
+        function stopPaymentChecking() {
+            if (paymentCheckInterval) {
+                clearInterval(paymentCheckInterval);
+                paymentCheckInterval = null;
+            }
+        }
+
+        // =======================================================
+        // OTP System
+        // =======================================================
+        function sendOTP() {
+            // توليد OTP عشوائي (في الواقع سيرسله الخادم)
+            const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // في الواقع: إرسال OTP عبر SMS gateway
+            console.log('OTP Sent:', generatedOTP);
+            
+            // حفظ OTP في localStorage للتحقق (في الواقع سيكون في الخادم)
+            localStorage.setItem('currentOTP', generatedOTP);
+            localStorage.setItem('otpExpiry', Date.now() + 600000); // 10 minutes
+            
+            // بدء المؤقت
+            startOTPTimer();
+            
+            // فتح نافذة OTP
+            document.getElementById('otpModal').classList.add('active');
+            document.getElementById('otpInput').value = '';
+            document.getElementById('otpStatus').style.display = 'none';
+            document.getElementById('resendOTPBtn').disabled = true;
+            
+            showNotification('success', 
+                currentLanguage === 'ar' ? 
+                'تم إرسال كود التفعيل إلى هاتفك' : 
+                'Verification code has been sent to your phone'
+            );
+        }
+
+        function startOTPTimer() {
+            otpTimeLeft = 600; // 10 minutes
+            updateOTPTimer();
+            
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            
+            otpTimerInterval = setInterval(() => {
+                otpTimeLeft--;
+                updateOTPTimer();
+                
+                if (otpTimeLeft <= 0) {
+                    clearInterval(otpTimerInterval);
+                    document.getElementById('resendOTPBtn').disabled = false;
+                }
+            }, 1000);
+        }
+
+        function updateOTPTimer() {
+            const minutes = Math.floor(otpTimeLeft / 60);
+            const seconds = otpTimeLeft % 60;
+            const timerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timer').textContent = timerText;
+            
+            const timerDiv = document.getElementById('otpTimer');
+            if (otpTimeLeft <= 60) {
+                timerDiv.className = 'otp-timer expiring';
+            } else {
+                timerDiv.className = 'otp-timer';
+            }
+        }
+
+        function closeOTPModal() {
+            document.getElementById('otpModal').classList.remove('active');
+            document.body.style.overflow = '';
+            
+            if (otpTimerInterval) {
+                clearInterval(otpTimerInterval);
+                otpTimerInterval = null;
+            }
+        }
+
+        function formatOTPInput(input) {
+            // السماح فقط بالأرقام
+            input.value = input.value.replace(/\D/g, '');
+            
+            // تحديث الـ placeholder ليعرض الشرطات
+            if (input.value.length === 0) {
+                input.placeholder = 'ـــ ـــ ـــ';
+            }
+        }
+
+        function isNumberKey(evt) {
+            const charCode = (evt.which) ? evt.which : evt.keyCode;
+            return !(charCode > 31 && (charCode < 48 || charCode > 57));
+        }
+
+        function verifyOTP() {
+            const otpInput = document.getElementById('otpInput').value;
+            const verifyBtn = document.getElementById('verifyOTPBtn');
+            const statusDiv = document.getElementById('otpStatus');
+            
+            if (otpInput.length !== 6) {
+                showNotification('error', currentLanguage === 'ar' ? 'الكود يجب أن يكون 6 أرقام' : 'Code must be 6 digits');
+                return;
+            }
+            
+            verifyBtn.innerHTML = '<span class="loading-spinner"></span> جاري التحقق...';
+            verifyBtn.disabled = true;
+            
+            // محاكاة التحقق من OTP (في الواقع سيتحقق من الخادم)
+            setTimeout(() => {
+                const savedOTP = localStorage.getItem('currentOTP');
+                const otpExpiry = localStorage.getItem('otpExpiry');
+                
+                if (otpInput === savedOTP && Date.now() < parseInt(otpExpiry)) {
+                    statusDiv.style.display = 'block';
+                    statusDiv.className = 'payment-status success';
+                    statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> تم التحقق بنجاح!';
+                    
+                    // تفعيل الكورس
+                    setTimeout(() => {
+                        closeOTPModal();
+                        activateCourse();
+                    }, 1500);
+                } else {
+                    statusDiv.style.display = 'block';
+                    statusDiv.className = 'payment-status error';
+                    statusDiv.innerHTML = '<i class="fas fa-times-circle"></i> كود غير صحيح أو منتهي الصلاحية';
+                    verifyBtn.innerHTML = '<i class="fas fa-check"></i> تفعيل الكورس';
+                    verifyBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        function resendOTP() {
+            const resendBtn = document.getElementById('resendOTPBtn');
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<i class="fas fa-redo"></i> جاري إعادة الإرسال...';
+            
+            setTimeout(() => {
+                sendOTP();
+                resendBtn.innerHTML = '<i class="fas fa-redo"></i> إعادة إرسال الكود';
+                showNotification('info', currentLanguage === 'ar' ? 'تم إعادة إرسال الكود' : 'Code resent successfully');
+            }, 2000);
+        }
+
+        // =======================================================
+        // Course Activation System
+        // =======================================================
+        function activateCourse() {
+            const activatedCourses = JSON.parse(localStorage.getItem('activatedCourses')) || [];
+            
+            if (!activatedCourses.includes(currentPaymentCourse)) {
+                activatedCourses.push(currentPaymentCourse);
+                localStorage.setItem('activatedCourses', JSON.stringify(activatedCourses));
+            }
+            
+            // عرض نافذة التفعيل الناجح
+            document.getElementById('activatedCourseName').textContent = currentPaymentCourse;
+            document.getElementById('activationDate').textContent = new Date().toLocaleDateString('ar-EG');
+            document.getElementById('courseAccessText').textContent = 
+                currentLanguage === 'ar' ? 
+                `يمكنك الآن الوصول إلى محتوى كورس ${currentPaymentCourse} بالكامل` :
+                `You now have full access to ${currentPaymentCourse} course content`;
+            
+            document.getElementById('courseAccessModal').classList.add('active');
+        }
+
+        function closeCourseAccessModal() {
+            document.getElementById('courseAccessModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function accessCourseContent() {
+            closeCourseAccessModal();
+            showNotification('success', 
+                currentLanguage === 'ar' ? 
+                `تم تحويلك إلى محتوى كورس ${currentPaymentCourse}` :
+                `Redirecting to ${currentPaymentCourse} course content`
+            );
+            
+            // هنا يمكنك إضافة تحويل إلى صفحة الكورس
+            // window.location.href = `/course/${currentPaymentCourse}`;
+        }
+
+        function accessCourse(courseName) {
+            showNotification('info', 
+                currentLanguage === 'ar' ? 
+                `جاري تحويلك إلى كورس ${courseName}` :
+                `Redirecting to ${courseName} course`
+            );
+            // هنا يمكنك إضافة تحويل إلى صفحة الكورس
+            // window.location.href = `/course/${courseName}`;
+        }
+
+        // =======================================================
+        // Scroll System - حركة مستمرة + تمرير يدوي
+        // =======================================================
+        let isDragging = false;
+        let startX;
+        let scrollLeft;
+
+        function setupScroll() {
+            const container = document.getElementById('cardsContainer');
+            const track = document.getElementById('cardsTrack');
+            if (!container || !track) return;
+
+            // Auto scroll animation
+            function startAutoScroll() {
+                if (!isAutoScrolling || isUserInteracting) return;
+
+                const cards = track.querySelectorAll('.card');
+                if (cards.length === 0) return;
+
+                const cardWidth = cards[0].offsetWidth + 30; // width + gap
+                const totalWidth = cardWidth * cards.length;
+                let position = 0;
+                const speed = 2.5; // pixels per frame
+
+                function animate() {
+                    if (!isAutoScrolling || isUserInteracting) {
+                        animationId = requestAnimationFrame(animate);
+                        return;
+                    }
+
+                    position -= speed;
+
+                    // Reset position when we've scrolled one full set
+                    if (Math.abs(position) >= totalWidth / 3) {
+                        position = 0;
+                    }
+
+                    track.style.transform = `translateX(${position}px)`;
+                    animationId = requestAnimationFrame(animate);
+                }
+
+                animate();
+            }
+
+            // Manual scroll events
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                isUserInteracting = true;
+                startX = e.pageX - container.offsetLeft;
+                scrollLeft = container.scrollLeft;
+                container.style.cursor = 'grabbing';
+
+                // Pause auto scroll
+                isAutoScrolling = false;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+                // Resume auto scroll after a delay
+                setTimeout(() => {
+                    isUserInteracting = false;
+                    isAutoScrolling = true;
+                    startAutoScroll();
+                }, 2000);
+            });
+
+            container.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+                // Resume auto scroll after a delay
+                setTimeout(() => {
+                    isUserInteracting = false;
+                    isAutoScrolling = true;
+                    startAutoScroll();
+                }, 2000);
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - container.offsetLeft;
+                const walk = (x - startX) * 2;
+                container.scrollLeft = scrollLeft - walk;
+            });
+
+            // Touch events for mobile
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                isUserInteracting = true;
+                startX = e.touches[0].pageX - container.offsetLeft;
+                scrollLeft = container.scrollLeft;
+
+                // Pause auto scroll
+                isAutoScrolling = false;
+            });
+
+            container.addEventListener('touchend', () => {
+                isDragging = false;
+                // Resume auto scroll after a delay
+                setTimeout(() => {
+                    isUserInteracting = false;
+                    isAutoScrolling = true;
+                    startAutoScroll();
+                }, 2000);
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const x = e.touches[0].pageX - container.offsetLeft;
+                const walk = (x - startX) * 2;
+                container.scrollLeft = scrollLeft - walk;
+            });
+
+            // Start auto scroll initially
+            startAutoScroll();
+        }
+
+        // =======================================================
+        // GooeyNav Implementation
+        // =======================================================
+        class GooeyNav {
+            constructor(container, options = {}) {
+                this.container = container;
+                this.nav = container.querySelector('nav');
+                this.links = container.querySelectorAll('.nav-links li');
+                this.filterEffect = container.querySelector('.effect.filter');
+                this.textEffect = container.querySelector('.effect.text');
+
+                this.options = {
+                    particleCount: 15,
+                    particleDistances: [90, 10],
+                    particleR: 100,
+                    animationTime: 600,
+                    timeVariance: 300,
+                    colors: [1, 2, 3, 1, 2, 3, 1, 4],
+                    initialActiveIndex: 0,
+                    ...options
+                };
+
+                this.activeIndex = this.options.initialActiveIndex;
+
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateEffectPosition(this.links[this.activeIndex]);
+                this.textEffect.classList.add('active');
+            }
+
+            setupEventListeners() {
+                this.links.forEach((link, index) => {
+                    link.addEventListener('click', (e) => this.handleClick(e, index));
+                });
+
+                window.addEventListener('resize', () => {
+                    this.updateEffectPosition(this.links[this.activeIndex]);
+                });
+            }
+
+            handleClick(e, index) {
+                e.preventDefault();
+                if (this.activeIndex === index) return;
+
+                this.activeIndex = index;
+                this.updateEffectPosition(e.currentTarget);
+
+                const particles = this.filterEffect.querySelectorAll('.particle');
+                particles.forEach(p => this.filterEffect.removeChild(p));
+
+                this.textEffect.classList.remove('active');
+                void this.textEffect.offsetWidth;
+                this.textEffect.classList.add('active');
+
+                this.makeParticles();
+            }
+
+            updateEffectPosition(element) {
+                const containerRect = this.container.getBoundingClientRect();
+                const pos = element.getBoundingClientRect();
+
+                const styles = {
+                    left: `${pos.x - containerRect.x}px`,
+                    top: `${pos.y - containerRect.y}px`,
+                    width: `${pos.width}px`,
+                    height: `${pos.height}px`
+                };
+
+                Object.assign(this.filterEffect.style, styles);
+                Object.assign(this.textEffect.style, styles);
+                this.textEffect.setAttribute('data-text', element.querySelector('a').getAttribute('data-text'));
+            }
+
+            noise(n = 1) {
+                return n / 2 - Math.random() * n;
+            }
+
+            getXY(distance, pointIndex, totalPoints) {
+                const angle = ((360 + this.noise(8)) / totalPoints) * pointIndex * (Math.PI / 180);
+                return [distance * Math.cos(angle), distance * Math.sin(angle)];
+            }
+
+            createParticle(i, t, d, r) {
+                let rotate = this.noise(r / 10);
+                return {
+                    start: this.getXY(d[0], this.options.particleCount - i, this.options.particleCount),
+                    end: this.getXY(d[1] + this.noise(7), this.options.particleCount - i, this.options.particleCount),
+                    time: t,
+                    scale: 1 + this.noise(0.2),
+                    color: this.options.colors[Math.floor(Math.random() * this.options.colors.length)],
+                    rotate: rotate > 0 ? (rotate + r / 20) * 10 : (rotate - r / 20) * 10
+                };
+            }
+
+            makeParticles() {
+                const d = this.options.particleDistances;
+                const r = this.options.particleR;
+                const bubbleTime = this.options.animationTime * 2 + this.options.timeVariance;
+                this.filterEffect.style.setProperty('--time', `${bubbleTime}ms`);
+
+                for (let i = 0; i < this.options.particleCount; i++) {
+                    const t = this.options.animationTime * 2 + this.noise(this.options.timeVariance * 2);
+                    const p = this.createParticle(i, t, d, r);
+
+                    setTimeout(() => {
+                        const particle = document.createElement('span');
+                        const point = document.createElement('span');
+                        particle.classList.add('particle');
+                        particle.style.setProperty('--start-x', `${p.start[0]}px`);
+                        particle.style.setProperty('--start-y', `${p.start[1]}px`);
+                        particle.style.setProperty('--end-x', `${p.end[0]}px`);
+                        particle.style.setProperty('--end-y', `${p.end[1]}px`);
+                        particle.style.setProperty('--time', `${p.time}ms`);
+                        particle.style.setProperty('--scale', `${p.scale}`);
+                        particle.style.setProperty('--color', `var(--color-${p.color}, white)`);
+                        particle.style.setProperty('--rotate', `${p.rotate}deg`);
+
+                        point.classList.add('point');
+                        particle.appendChild(point);
+                        this.filterEffect.appendChild(particle);
+
+                        requestAnimationFrame(() => {
+                            this.filterEffect.classList.add('active');
+                        });
+
+                        setTimeout(() => {
+                            try {
+                                this.filterEffect.removeChild(particle);
+                            } catch {
+                                // Do nothing
+                            }
+                        }, t);
+                    }, 30);
+                }
+            }
+        }
+
+        // =======================================================
+        // Notification System
+        // =======================================================
+        function showNotification(type, message) {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-exclamation-circle';
+            if (type === 'warning') icon = 'fa-exclamation-triangle';
+
+            notification.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // =======================================================
+        // FAQ System
+        // =======================================================
+        function setupFAQ() {
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+
+                question.addEventListener('click', () => {
+                    // Close all other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+        }
+
+        // =======================================================
+        // Modal Functions
+        // =======================================================
+        function openPaymentModal(courseName, price) {
+            currentPaymentCourse = courseName;
+            document.getElementById('courseAmount').textContent = price + (currentLanguage === 'ar' ? ' جنيه' : ' EGP');
+            document.getElementById('paymentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.body.style.overflow = '';
+            if (currentPaymentCourse) {
+                showNotification('success', currentLanguage === 'ar' ?
+                    'شكراً لك! سيتم تفعيل الكورس: ' + currentPaymentCourse + ' خلال 24 ساعة بعد التحقق من الدفع.' :
+                    'Thank you! The course: ' + currentPaymentCourse + ' will be activated within 24 hours after payment verification.');
+                currentPaymentCourse = '';
+            }
+        }
+
+        function openCodeModal() {
+            document.getElementById('codeModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('courseCode').focus();
+        }
+
+        function closeCodeModal() {
+            document.getElementById('codeModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('courseCode').value = '';
+        }
+
+        function validateCode() {
+            const code = document.getElementById('courseCode').value.trim();
+            if (code === '') {
+                showNotification('error', currentLanguage === 'ar' ? 'يرجى إدخال كود الكورس' : 'Please enter the course code');
+                return;
+            }
+            showNotification('success', currentLanguage === 'ar' ? 'تم تفعيل الكود بنجاح! يمكنك الآن الوصول إلى محتوى الكورس.' : 'Code activated successfully! You can now access the course content.');
+            closeCodeModal();
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function openSignupModal() {
+            document.getElementById('signupModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSignupModal() {
+            document.getElementById('signupModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showNotification('error', currentLanguage === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill in all fields');
+                return;
+            }
+
+            showNotification('success', currentLanguage === 'ar' ? 'تم تسجيل الدخول بنجاح! مرحباً ' + username : 'Login successful! Welcome ' + username);
+            closeLoginModal();
+        }
+
+        function handleSignup() {
+            const fullName = document.getElementById('signupFullName').value;
+            const email = document.getElementById('signupEmail').value;
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const phone = document.getElementById('signupPhone').value;
+
+            if (!fullName || !email || !username || !password || !confirmPassword || !phone) {
+                showNotification('error', currentLanguage === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showNotification('error', currentLanguage === 'ar' ? 'كلمة المرور غير متطابقة' : 'Passwords do not match');
+                return;
+            }
+
+            showNotification('success', currentLanguage === 'ar' ? 'تم إنشاء الحساب بنجاح! تم إرسال رسالة تأكيد إلى بريدك الإلكتروني.' : 'Account created successfully! A confirmation message has been sent to your email.');
+            closeSignupModal();
+        }
+
+        // =======================================================
+        // Rating Modal Functions
+        // =======================================================
+        function openRatingModal(courseName) {
+            currentRatingCourse = courseName;
+            document.getElementById('ratingModalTitle').textContent = 
+                currentLanguage === 'ar' ? `قيم كورس ${courseName}` : `Rate ${courseName} Course`;
+            document.getElementById('ratingModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Reset stars
+            document.querySelectorAll('.star-modal').forEach(star => {
+                star.classList.remove('active');
+            });
+            document.getElementById('ratingText').textContent = 
+                currentLanguage === 'ar' ? 'اختر تقييمك' : 'Choose your rating';
+            
+            // Setup star rating events
+            setupModalStarRating();
+        }
+
+        function closeRatingModal() {
+            document.getElementById('ratingModal').classList.remove('active');
+            document.body.style.overflow = '';
+            currentRatingCourse = '';
+            currentUserRating = 0;
+        }
+
+        function setupModalStarRating() {
+            const stars = document.querySelectorAll('.star-modal');
+            const ratingText = document.getElementById('ratingText');
+            
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    highlightStars(rating);
+                    updateRatingText(rating);
+                });
+                
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    currentUserRating = rating;
+                    highlightStars(rating);
+                    updateRatingText(rating);
+                });
+            });
+            
+            // Reset when mouse leaves stars container
+            document.querySelector('.stars-container').addEventListener('mouseleave', function() {
+                if (currentUserRating === 0) {
+                    resetStars();
+                } else {
+                    highlightStars(currentUserRating);
+                }
+            });
+        }
+
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.star-modal');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function resetStars() {
+            const stars = document.querySelectorAll('.star-modal');
+            stars.forEach(star => {
+                star.classList.remove('active');
+            });
+            document.getElementById('ratingText').textContent = 
+                currentLanguage === 'ar' ? 'اختر تقييمك' : 'Choose your rating';
+        }
+
+        function updateRatingText(rating) {
+            const ratingTexts = translations[currentLanguage].ratingTexts;
+            document.getElementById('ratingText').textContent = ratingTexts[rating - 1];
+        }
+
+        function submitRating() {
+            if (currentUserRating === 0) {
+                showNotification('error', 
+                    currentLanguage === 'ar' ? 'يرجى اختيار تقييم قبل التأكيد' : 'Please choose a rating before confirming'
+                );
+                return;
+            }
+            
+            rateCourse(currentRatingCourse, currentUserRating);
+            closeRatingModal();
+        }
+
+        // =======================================================
+        // Mobile Navigation
+        // =======================================================
+        function setupMobileNavigation() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileNav = document.getElementById('mobile-nav');
+            const overlay = document.getElementById('overlay');
+
+            function toggleMobileMenu() {
+                mobileNav.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+            }
+
+            mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+            overlay.addEventListener('click', toggleMobileMenu);
+        }
+
         // =======================================================
         // Glitch Background Animation
         // =======================================================
@@ -1204,13 +3887,14 @@
 
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789';
             const lettersAndSymbols = Array.from(characters);
-            const fontSize = 16;
-            const charWidth = 10;
-            const charHeight = 20;
+            const fontSize = 14;
+            const charWidth = 8;
+            const charHeight = 16;
             const glitchSpeed = 50;
             let lastGlitchTime = Date.now();
             let letters = [];
             let grid = { columns: 0, rows: 0 };
+            let isTabActive = true;
 
             const getRandomChar = () => lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
             const getRandomColor = () => ['#2b4539', '#61dca3', '#61b3dc'][Math.floor(Math.random() * 3)];
@@ -1266,447 +3950,106 @@
                 }
             };
 
-            const animate = () => {
+            const optimizedAnimate = () => {
+                if (!isTabActive) {
+                    animationFrameId = requestAnimationFrame(optimizedAnimate);
+                    return;
+                }
+
                 const now = Date.now();
                 if (now - lastGlitchTime >= glitchSpeed) {
                     updateLetters();
                     drawLetters();
                     lastGlitchTime = now;
                 }
-                animationFrameId = requestAnimationFrame(animate);
+                animationFrameId = requestAnimationFrame(optimizedAnimate);
             };
 
+            // Handle tab visibility for performance
+            document.addEventListener('visibilitychange', () => {
+                isTabActive = !document.hidden;
+            });
+
             resizeCanvas();
-            animate();
+            optimizedAnimate();
 
             window.addEventListener('resize', resizeCanvas);
         };
 
         // =======================================================
-        // PillNav Animation System
+        // Initialization - الإصدار المصحح
         // =======================================================
-        const setupPillNav = () => {
-            const circleRefs = [];
-            const tlRefs = [];
-            const activeTweenRefs = [];
-            const logoImgRef = document.getElementById('pill-logo');
-            const logoTweenRef = { current: null };
-            const hamburgerRef = document.getElementById('mobile-menu-button');
-            const mobileMenuRef = document.getElementById('mobile-menu-popover');
-            const navItemsRef = document.getElementById('pill-nav-items');
-            const logoRef = document.getElementById('pill-logo');
-            const ease = 'power3.easeOut';
-            const initialLoadAnimation = true;
-
-            const layout = () => {
-                const pills = document.querySelectorAll('.pill');
-
-                pills.forEach((pill, i) => {
-                    const circle = pill.querySelector('.hover-circle');
-                    if (!circle || !pill.parentElement) return;
-
-                    const rect = pill.getBoundingClientRect();
-                    const { width: w, height: h } = rect;
-                    const R = ((w * w) / 4 + h * h) / (2 * h);
-                    const D = Math.ceil(2 * R) + 2;
-                    const delta = Math.ceil(R - Math.sqrt(Math.max(0, R * R - (w * w) / 4))) + 1;
-                    const originY = D - delta;
-
-                    circle.style.width = `${D}px`;
-                    circle.style.height = `${D}px`;
-                    circle.style.bottom = `-${delta}px`;
-
-                    gsap.set(circle, {
-                        xPercent: -50,
-                        scale: 0,
-                        transformOrigin: `50% ${originY}px`
-                    });
-
-                    const label = pill.querySelector('.pill-label');
-                    const white = pill.querySelector('.pill-label-hover');
-
-                    if (label) gsap.set(label, { y: 0 });
-                    if (white) gsap.set(white, { y: h + 12, opacity: 0 });
-
-                    circleRefs[i] = circle;
-
-                    tlRefs[i]?.kill();
-                    const tl = gsap.timeline({ paused: true });
-
-                    tl.to(circle, { scale: 1.2, xPercent: -50, duration: 2, ease, overwrite: 'auto' }, 0);
-
-                    if (label) {
-                        tl.to(label, { y: -(h + 8), duration: 2, ease, overwrite: 'auto' }, 0);
-                    }
-
-                    if (white) {
-                        gsap.set(white, { y: Math.ceil(h + 100), opacity: 0 });
-                        tl.to(white, { y: 0, opacity: 1, duration: 2, ease, overwrite: 'auto' }, 0);
-                    }
-
-                    tlRefs[i] = tl;
-
-                    pill.addEventListener('mouseenter', () => handleEnter(i));
-                    pill.addEventListener('mouseleave', () => handleLeave(i));
-                });
-            };
-
-            const handleEnter = i => {
-                const tl = tlRefs[i];
-                if (!tl) return;
-                activeTweenRefs[i]?.kill();
-                activeTweenRefs[i] = tl.tweenTo(tl.duration(), {
-                    duration: 0.3,
-                    ease,
-                    overwrite: 'auto'
-                });
-            };
-
-            const handleLeave = i => {
-                const tl = tlRefs[i];
-                if (!tl) return;
-                activeTweenRefs[i]?.kill();
-                activeTweenRefs[i] = tl.tweenTo(0, {
-                    duration: 0.2,
-                    ease,
-                    overwrite: 'auto'
-                });
-            };
-
-            const handleLogoEnter = () => {
-                if (!logoImgRef) return;
-                logoTweenRef.current?.kill();
-                gsap.set(logoImgRef, { rotate: 0 });
-                logoTweenRef.current = gsap.to(logoImgRef, {
-                    rotate: 360,
-                    duration: 0.2,
-                    ease,
-                    overwrite: 'auto'
-                });
-            };
-
-            layout();
-            window.addEventListener('resize', layout);
-
-            if (logoImgRef) {
-                logoImgRef.addEventListener('mouseenter', handleLogoEnter);
+        document.addEventListener('DOMContentLoaded', () => {
+            // تحميل التفضيلات
+            loadTheme();
+            loadDarkModePreference();
+            
+            // تحميل اللغة المفضلة
+            const preferredLang = localStorage.getItem('preferredLanguage') || 'ar';
+            updatePageLanguage(preferredLang);
+            
+            // إعداد المستمعين للأحداث
+            setupEventListeners();
+            
+            // إعداد الأنظمة
+            setupGlitchCanvas();
+            setupMobileNavigation();
+            setupFAQ();
+            setupScroll();
+            
+            // إعداد GooeyNav
+            const gooeyNavContainer = document.getElementById('gooey-nav-wrapper');
+            if (gooeyNavContainer) {
+                new GooeyNav(gooeyNavContainer);
             }
+            
+            // إشعار ترحيبي
+            setTimeout(() => {
+                showNotification('info', currentLanguage === 'ar' ?
+                    'مرحباً بك في منصة Lam3Code! ابدأ رحلتك في تعلم البرمجة الآن.' :
+                    'Welcome to Lam3Code! Start your programming journey now.');
+            }, 1000);
+        });
 
-            let isMobileMenuOpen = false;
-
-            if (hamburgerRef && mobileMenuRef) {
-                hamburgerRef.addEventListener('click', toggleMobileMenu);
-
-                function toggleMobileMenu() {
-                    isMobileMenuOpen = !isMobileMenuOpen;
-
-                    const lines = hamburgerRef.querySelectorAll('.hamburger-line');
-                    if (isMobileMenuOpen) {
-                        gsap.to(lines[0], { rotation: 45, y: 3, duration: 0.3, ease });
-                        gsap.to(lines[1], { rotation: -45, y: -3, duration: 0.3, ease });
-
-                        gsap.set(mobileMenuRef, { visibility: 'visible' });
-                        gsap.fromTo(
-                            mobileMenuRef,
-                            { opacity: 0, y: 10, scaleY: 1 },
-                            {
-                                opacity: 1,
-                                y: 0,
-                                scaleY: 1,
-                                duration: 0.3,
-                                ease,
-                                transformOrigin: 'top center'
-                            }
-                        );
-                    } else {
-                        gsap.to(lines[0], { rotation: 0, y: 0, duration: 0.3, ease });
-                        gsap.to(lines[1], { rotation: 0, y: 0, duration: 0.3, ease });
-
-                        gsap.to(mobileMenuRef, {
-                            opacity: 0,
-                            y: 10,
-                            scaleY: 1,
-                            duration: 0.2,
-                            ease,
-                            transformOrigin: 'top center',
-                            onComplete: () => {
-                                gsap.set(mobileMenuRef, { visibility: 'hidden' });
-                            }
-                        });
-                    }
-                }
+        function setupEventListeners() {
+            // مستمعي أحداث زر الثيم
+            const themeSwitcher = document.getElementById('theme-switcher');
+            const mobileThemeSwitcher = document.getElementById('mobile-theme-switcher');
+            
+            if (themeSwitcher) {
+                themeSwitcher.addEventListener('click', switchTheme);
             }
-
-            if (initialLoadAnimation) {
-                if (logoRef) {
-                    gsap.set(logoRef, { scale: 0 });
-                    gsap.to(logoRef, {
-                        scale: 1,
-                        duration: 0.6,
-                        ease
-                    });
-                }
-
-                if (navItemsRef) {
-                    gsap.set(navItemsRef, { width: 0, overflow: 'hidden' });
-                    gsap.to(navItemsRef, {
-                        width: 'auto',
-                        duration: 0.6,
-                        ease
-                    });
-                }
+            
+            if (mobileThemeSwitcher) {
+                mobileThemeSwitcher.addEventListener('click', switchTheme);
             }
-        };
-
-        // =======================================================
-        // CourseLoop Animation System (LogoLoop for Courses)
-        // =======================================================
-        const setupCourseLoop = () => {
-            const containerRef = document.getElementById('coursesLoop');
-            const trackRef = document.getElementById('coursesTrack');
-            const seqRefs = [];
-
-            const courses = [
-                { name: 'HTML & CSS', title: 'تطوير واجهات الويب الأساسية', desc: 'تعلم أساسيات تطوير واجهات الويب باستخدام HTML و CSS.', price: 300 },
-                { name: 'JavaScript', title: 'برمجة JavaScript التفاعلية', desc: 'أتقن لغة JavaScript لإضافة التفاعل إلى مواقع الويب.', price: 400 },
-                { name: 'React JS', title: 'بناء تطبيقات React المتقدمة', desc: 'تعلم React لبناء واجهات مستخدم قوية وفعالة.', price: 500 },
-                { name: 'Tailwind CSS', title: 'تصميم سريع باستخدام Tailwind', desc: 'استخدم إطار عمل Tailwind CSS لتنسيق مواقع الويب.', price: 350 },
-                { name: 'Node.js', title: 'تطوير Backend مع Node.js', desc: 'أنشئ تطبيقات خادم قوية باستخدام Node.js.', price: 450 },
-                { name: 'Python', title: 'برمجة Python للمبتدئين', desc: 'تعلم أساسيات Python للبرمجة وتحليل البيانات.', price: 400 }
-            ];
-
-            const ANIMATION_CONFIG = {
-                SMOOTH_TAU: 0.25,
-                MIN_COPIES: 2,
-                COPY_HEADROOM: 2
-            };
-
-            let seqWidth = 0;
-            let copyCount = ANIMATION_CONFIG.MIN_COPIES;
-            let isHovered = false;
-            const speed = 80;
-            const direction = 'left';
-            const pauseOnHover = true;
-
-            const targetVelocity = () => {
-                const magnitude = Math.abs(speed);
-                const directionMultiplier = direction === 'left' ? 1 : -1;
-                const speedMultiplier = speed < 0 ? -1 : 1;
-                return magnitude * directionMultiplier * speedMultiplier;
-            };
-
-            const updateDimensions = () => {
-                const containerWidth = containerRef?.clientWidth ?? 0;
-                let sequenceWidth = 0;
-
-                const firstList = trackRef?.querySelector('.courseloop__list');
-                if (firstList) {
-                    sequenceWidth = firstList.getBoundingClientRect().width;
-                }
-
-                if (sequenceWidth > 0) {
-                    seqWidth = Math.ceil(sequenceWidth);
-                    const copiesNeeded = Math.ceil(containerWidth / sequenceWidth) + ANIMATION_CONFIG.COPY_HEADROOM;
-                    copyCount = Math.max(ANIMATION_CONFIG.MIN_COPIES, copiesNeeded);
-                    createCourseLists();
-                }
-            };
-
-            const createCourseCard = (course, key) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="card-img">${course.name}</div>
-                    <div class="card-content">
-                        <h3>${course.title}</h3>
-                        <p>${course.desc}</p>
-                        <div class="card-buttons">
-                            <button class="card-button" onclick="openPaymentModal('${course.name}', ${course.price})">اشترك في الكورس</button>
-                            <button class="card-button secondary" onclick="openCodeModal()">أدخل كود الكورس</button>
-                        </div>
-                    </div>
-                `;
-                return card;
-            };
-
-            const createCourseLists = () => {
-                if (!trackRef) return;
-
-                trackRef.innerHTML = '';
-
-                for (let copyIndex = 0; copyIndex < copyCount; copyIndex++) {
-                    const list = document.createElement('div');
-                    list.className = 'courseloop__list';
-
-                    if (copyIndex === 0) {
-                        seqRefs[0] = list;
-                    }
-
-                    courses.forEach((course, courseIndex) => {
-                        const item = document.createElement('div');
-                        item.className = 'courseloop__item';
-                        item.appendChild(createCourseCard(course, `${copyIndex}-${courseIndex}`));
-                        list.appendChild(item);
-                    });
-
-                    trackRef.appendChild(list);
-                }
-
-                setTimeout(updateDimensions, 100);
-            };
-
-            const rafRef = { current: null };
-            const lastTimestampRef = { current: null };
-            const offsetRef = { current: 0 };
-            const velocityRef = { current: 0 };
-
-            const animate = (timestamp) => {
-                if (lastTimestampRef.current === null) {
-                    lastTimestampRef.current = timestamp;
-                }
-
-                const deltaTime = Math.max(0, timestamp - lastTimestampRef.current) / 1000;
-                lastTimestampRef.current = timestamp;
-
-                const target = pauseOnHover && isHovered ? 0 : targetVelocity();
-
-                const easingFactor = 1 - Math.exp(-deltaTime / ANIMATION_CONFIG.SMOOTH_TAU);
-                velocityRef.current += (target - velocityRef.current) * easingFactor;
-
-                if (seqWidth > 0) {
-                    let nextOffset = offsetRef.current + velocityRef.current * deltaTime;
-                    nextOffset = ((nextOffset % seqWidth) + seqWidth) % seqWidth;
-                    offsetRef.current = nextOffset;
-
-                    const translateX = -offsetRef.current;
-                    if (trackRef) {
-                        trackRef.style.transform = `translate3d(${translateX}px, 0, 0)`;
-                    }
-                }
-
-                rafRef.current = requestAnimationFrame(animate);
-            };
-
-            rafRef.current = requestAnimationFrame(animate);
-
-            if (containerRef) {
-                containerRef.addEventListener('mouseenter', () => {
-                    if (pauseOnHover) isHovered = true;
-                });
-
-                containerRef.addEventListener('mouseleave', () => {
-                    if (pauseOnHover) isHovered = false;
-                });
+            
+            // مستمعي أحداث Dark/Light Mode
+            const darkModeInput = document.getElementById('dark-mode-input');
+            const mobileDarkModeInput = document.getElementById('mobile-dark-mode-input');
+            
+            if (darkModeInput) {
+                darkModeInput.addEventListener('change', toggleDarkMode);
             }
-
-            createCourseLists();
-            window.addEventListener('resize', updateDimensions);
-
-            return () => {
-                if (rafRef.current !== null) {
-                    cancelAnimationFrame(rafRef.current);
-                }
-            };
-        };
-
-        // =======================================================
-        // Modal Functions
-        // =======================================================
-        let currentCourse = '';
-
-        function openPaymentModal(courseName, price) {
-            currentCourse = courseName;
-            document.getElementById('courseAmount').textContent = price + ' جنيه';
-            document.getElementById('paymentModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModal').classList.remove('active');
-            document.body.style.overflow = '';
-            if (currentCourse) {
-                alert('شكراً لك! سيتم تفعيل الكورس: ' + currentCourse + ' خلال 24 ساعة بعد التحقق من الدفع.');
-                currentCourse = '';
+            
+            if (mobileDarkModeInput) {
+                mobileDarkModeInput.addEventListener('change', toggleDarkMode);
+            }
+            
+            // مستمعي أحداث اللغة
+            const languageSwitcher = document.getElementById('language-switcher');
+            const mobileLanguageSwitcher = document.getElementById('mobile-language-switcher');
+            
+            if (languageSwitcher) {
+                languageSwitcher.addEventListener('click', switchLanguage);
+            }
+            
+            if (mobileLanguageSwitcher) {
+                mobileLanguageSwitcher.addEventListener('click', switchLanguage);
             }
         }
 
-        function openCodeModal() {
-            document.getElementById('codeModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            document.getElementById('courseCode').focus();
-        }
-
-        function closeCodeModal() {
-            document.getElementById('codeModal').classList.remove('active');
-            document.body.style.overflow = '';
-            document.getElementById('courseCode').value = '';
-        }
-
-        function validateCode() {
-            const code = document.getElementById('courseCode').value.trim();
-            if (code === '') {
-                alert('يرجى إدخال كود الكورس');
-                return;
-            }
-            alert('تم تفعيل الكود بنجاح! يمكنك الآن الوصول إلى محتوى الكورس.');
-            closeCodeModal();
-        }
-
-        function openLoginModal() {
-            document.getElementById('loginModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        function openSignupModal() {
-            document.getElementById('signupModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSignupModal() {
-            document.getElementById('signupModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        function handleLogin() {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-
-            if (!username || !password) {
-                alert('يرجى ملء جميع الحقول');
-                return;
-            }
-
-            alert('تم تسجيل الدخول بنجاح! مرحباً ' + username);
-            closeLoginModal();
-        }
-
-        function handleSignup() {
-            const fullName = document.getElementById('signupFullName').value;
-            const email = document.getElementById('signupEmail').value;
-            const username = document.getElementById('signupUsername').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('signupConfirmPassword').value;
-            const phone = document.getElementById('signupPhone').value;
-
-            if (!fullName || !email || !username || !password || !confirmPassword || !phone) {
-                alert('يرجى ملء جميع الحقول');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                alert('كلمة المرور غير متطابقة');
-                return;
-            }
-
-            alert('تم إنشاء الحساب بنجاح! تم إرسال رسالة تأكيد إلى بريدك الإلكتروني.');
-            closeSignupModal();
-        }
-
+        // Close modals when clicking outside
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', function (e) {
                 if (e.target === this) {
@@ -1715,50 +4058,6 @@
                 }
             });
         });
-
-        // =======================================================
-        // Language Switching
-        // =======================================================
-        function switchLanguage() {
-            const body = document.getElementById('body-content');
-            const currentLang = body.getAttribute('lang');
-            const newLang = currentLang === 'ar' ? 'en' : 'ar';
-
-            localStorage.setItem('preferredLanguage', newLang);
-            location.reload();
-        }
-
-        function loadPreferredLanguage() {
-            const preferredLang = localStorage.getItem('preferredLanguage') || 'ar';
-            const body = document.getElementById('body-content');
-            const switcher = document.getElementById('language-switcher');
-            const mobileSwitcher = document.getElementById('mobile-language-switcher');
-
-            body.setAttribute('lang', preferredLang);
-            document.documentElement.setAttribute('dir', preferredLang === 'ar' ? 'rtl' : 'ltr');
-
-            if (preferredLang === 'ar') {
-                switcher.textContent = 'English';
-                mobileSwitcher.textContent = 'English';
-            } else {
-                switcher.textContent = 'العربية';
-                mobileSwitcher.textContent = 'العربية';
-            }
-        }
-
-        // =======================================================
-        // Initialization
-        // =======================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPreferredLanguage();
-            setupGlitchCanvas();
-            setupPillNav();
-            setupCourseLoop();
-
-            document.getElementById('language-switcher').addEventListener('click', switchLanguage);
-            document.getElementById('mobile-language-switcher').addEventListener('click', switchLanguage);
-        });
     </script>
 </body>
-
 </html>
